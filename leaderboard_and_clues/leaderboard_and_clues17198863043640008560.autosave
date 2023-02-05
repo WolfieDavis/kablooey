@@ -2,9 +2,6 @@
 // import data.clues
 
 /*--- variables ---*/
-//overall
-int width = 1920, height = 1080;
-
 //for leaderboard
 PFont MkNotes;
 PImage BgLb, BgClues, Trophy;
@@ -17,12 +14,11 @@ int[] scores = {24, 25, 50, 70, 75, 80, 120, 225, 250, 300};
 
 //for questions
 int clueNum = 0;
-int clueBoxW = 1500, clueBoxY = 200, clueBoxH = height - clueBoxY - 50;
+int clueBoxW = 1500, clueBoxY = 200;
+int clueBoxH = height - clueBoxY - 50;
 int imageSize = 300;
 int imageX = (width+clueBoxW)/2 - imageSize + 50;
 int imageY = clueBoxY+clueBoxH/2 + 50;
-
-//actual question info
 String[] clueImagesNames = {"animalOne.jpg", "animalTwo.jpg", "animalThree.jpg"};
 PImage[] clueImages = new PImage[clueImagesNames.length];
 String[] clueText = {
@@ -35,7 +31,7 @@ void setup() {
   size(1920, 1080); //fullscreen for monitor
   BgLb = loadImage("BgLb.jpg"); //background image for leaderboard
   BgClues = loadImage("BgClues.jpg");
-  Trophy = loadImage("trophy.png");
+  Trophy s= loadImage("trophy.png");
   MkNotes = createFont("MarkerNotes.ttf", 10);
 
   //initialize array of images for clues
@@ -96,25 +92,6 @@ void mousePressed() {
   if (screen == 1) index = LbCheck();
 }
 
-/*--- keybaord input ---*/
-void keyPressed() {
-  if (screen == 0) {
-    if (key == 'a') {
-      int rand = random(0, 2); 
-      clueNum = rand;
-    }
-    else screen = 1;
-  } else if (screen == 2) {
-    if (key == '\n' && typing.length() > 0) {
-      names[index] = typing;
-      typing = "";
-      screen = 1;
-    } else if ((key == '\b') && typing.length() > 0) {
-      typing = typing.substring(0, typing.length()-1);
-    } else typing = typing + key;
-  } else screen = 0;
-}
-
 /*--- check which leaderboard slot was clicked ---*/
 int LbCheck() {
   int indexCheck = 0;
@@ -132,7 +109,7 @@ int LbCheck() {
   return indexCheck;
 }
 
-/*--- edit leaderboard window ---*/
+/*--- edit leaderboard name ---*/
 void LbEdit() {
   //window
   rectMode(CENTER);
@@ -152,6 +129,24 @@ void LbEdit() {
   textSize(15);
   text("press enter to set", width/2, (height+300)/2 - 35);
   // text(mouseY + " index: " + index, width/2, (height+300)/2 - 75); //for debugging
+}
+
+/*--- keybaord input ---*/
+void keyPressed() {
+  if (screen == 0) {
+    if (key == 'a') {
+      if (clueNum == 2) clueNum = 0;
+      else clueNum++;
+    } else screen = 1;
+  } else if (screen == 2) {
+    if (key == '\n' && typing.length() > 0) {
+      names[index] = typing;
+      typing = "";
+      screen = 1;
+    } else if ((key == '\b') && typing.length() > 0) {
+      typing = typing.substring(0, typing.length()-1);
+    } else typing = typing + key;
+  } else screen = 0;
 }
 
 /*--- clues screen ---*/
@@ -176,13 +171,14 @@ void clues() {
   textSize(75);
   text("Clues", width/2, clueBoxY + 125);
   //text
-  textSize(50);
   rectMode(CORNER);
   textAlign(LEFT);
+  textSize(50);
+  // text(clueText[clueNum], 281, 358, 833, 1104);
   text(clueText[clueNum], (width-clueBoxW)/2 + 65, clueBoxY + 200, imageX-imageSize - 200, clueBoxY + clueBoxH - 100);
   //image
-  textSize(50);
   textAlign(CENTER);
+  // textSize(40);
   text("animal closeup", imageX, imageY - imageSize/2 - 65);
   imageMode(CENTER);
   image(clueImages[clueNum], imageX, imageY, imageSize, imageSize);
