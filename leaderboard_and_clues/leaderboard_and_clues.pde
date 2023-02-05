@@ -100,8 +100,9 @@ void mousePressed() {
 void keyPressed() {
   if (screen == 0) {
     if (key == 'a') {
-      int rand = random(0, 2); 
-      clueNum = rand;
+      if(clueNum == 2) clueNum = 0;
+      else clueNum++; 
+      // clueNum = int[random(0, 2)];
     }
     else screen = 1;
   } else if (screen == 2) {
