@@ -5,6 +5,12 @@
 //overall
 int width = 1920, height = 1080;
 
+//for level select
+int boxWidth = 850, boxHeight = 550;
+int cirlceY = 250, circleSpacing = 265;
+int descY = 430;
+String[][] desc = {{"Easy", "Images"}, {"Meduim", "Text Clues"}, {"Hard", "Text Clues"}};
+
 //for leaderboard
 PFont MkNotes;
 PImage BgLb, BgClues, Trophy;
@@ -18,10 +24,10 @@ int[] scores = {24, 25, 50, 70, 75, 80, 120, 225, 250, 300};
 //for questions
 int clueNum = 0;
 int clueLevel = 0;
-int clueBoxW = 1500, clueBoxY = 200, clueBoxH = height - clueBoxY - 50;
+int clueBoxW = 1250, clueBoxY = 100, clueBoxH = height - clueBoxY - 50;
 int imageSize = 300;
 int imageX = (width+clueBoxW)/2 - imageSize + 50;
-int imageY = clueBoxY+clueBoxH/2 + 50;
+int imageY = clueBoxY+clueBoxH/2 + 100;
 
 //actual question info
 String[] clueImagesNames = {"a1.jpg", "a2.jpg", "a3.jpg", "a4.jpg", "a5.jpg", "a6.jpg", "a7.jpg", "a8.jpg", "a9.jpg", "a10.jpg", "a11.jpg", "a12.jpg", "a13.jpg", "a14.jpg", "a15.jpg"};
@@ -84,14 +90,15 @@ void levelSelectLogic() {
 //clues
 void cluesLogic() {
   if (key == 'a') {
-    if (clueNum == 2) clueNum = 0;
+    if (clueNum == 14) clueNum = 0;
     else clueNum++;
     // clueNum = int[random(0, 2)];
   } else screen = 2; //go to leaderboard
 }
 //leaderboard
 void lbLogic() {
-  screen = 0;
+  screen = 0; //go back to level select
+  // clueLevel = 0; //reset clue level
 }
 //leaderboard
 void lbEditLogic() {
@@ -103,7 +110,6 @@ void lbEditLogic() {
     typing = typing.substring(0, typing.length()-1);
   } else typing = typing + key;
 }
-
 
 /*--- if mouse clicked ---*/
 void mousePressed() {
@@ -199,36 +205,37 @@ void clues() {
   rectMode(CENTER);
   rect(width/2, clueBoxY+clueBoxH/2, clueBoxW, clueBoxH, 15);
 
+  /*--- title ---*/
+  textAlign(CENTER);
+  fill(255);
+  textSize(100);
+  text("Clue " + (clueNum+1), width/2, clueBoxY + 125);
+  textSize(35);
+  text(desc[clueLevel][0] + " - " + desc[clueLevel][1], width/2, clueBoxY + 185);
+
+
   /*--- clues ---*/
   if (clueLevel == 0) {
     //image
     textSize(50);
     textAlign(CENTER);
-    text("animal closeup", imageX, imageY - imageSize/2 - 65);
+    text("animal closeup", width/2, imageY - imageSize/2 - 65);
     imageMode(CENTER);
-    image(clueImages[clueNum], imageX, imageY, imageSize, imageSize);
+    image(clueImages[clueNum], width/2, imageY, imageSize, imageSize);
   } else {
-    int clueIndex = clueLevel-1; //converts 1-2 to 0-1
-    //titles
-    fill(255);
-    textSize(75);
-    text("Clues", width/2, clueBoxY + 125);
+    int clueIndex = clueLevel-1; //converts 1-2 to 0-1 for the array index
     //text
     textSize(50);
     rectMode(CORNER);
     textAlign(LEFT);
-    text(clueText[clueNum][clueIndex], (width-clueBoxW)/2 + 65, clueBoxY + 200, imageX-imageSize - 200, clueBoxY + clueBoxH - 100);
+    text(clueText[clueNum][clueIndex], (width-clueBoxW)/2 + 100, clueBoxY + 250, (width+clueBoxW)/2 - 100, clueBoxY + clueBoxH - 100);
   }
+
+  /*-- timer --*/
 }
 
 /*--- level selection window ---*/
 void levelSelect() {
-  //for level select
-  int boxWidth = 850, boxHeight = 550;
-  int cirlceY = 250, circleSpacing = 265;
-  int descY = 430;
-  String[][] desc = {{"Easy", "Images"}, {"Meduim", "Text Clues"}, {"Hard", "Text Clues"}};
-
   /*--- background ---*/
   imageMode(CORNER);
   background(0);
