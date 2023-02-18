@@ -9,32 +9,44 @@ int width = 1920, height = 1080;
 PFont MkNotes;
 PImage BgLb, BgClues, Trophy;
 int index = 0;
-int screen = 1;
+int screen = 0;
 int titleY = 175, listY = 275, listW = 1000, listSpacing = 80;
 String typing = "";
-String[] names = {"one", "two", "NEW SCORE", "four", "five", "size", "seven", "eight", "nine", "ten"};
+String[] names = {"one", "two", "three", "four", "five", "size", "seven", "eight", "nine", "ten"};
 int[] scores = {24, 25, 50, 70, 75, 80, 120, 225, 250, 300};
 
 //for questions
 int clueNum = 0;
+int clueLevel = 0;
 int clueBoxW = 1500, clueBoxY = 200, clueBoxH = height - clueBoxY - 50;
 int imageSize = 300;
 int imageX = (width+clueBoxW)/2 - imageSize + 50;
 int imageY = clueBoxY+clueBoxH/2 + 50;
 
 //actual question info
-String[] clueImagesNames = {"animalOne.jpg", "animalTwo.jpg", "animalThree.jpg"};
+String[] clueImagesNames = {"a1.jpg", "a2.jpg", "a3.jpg", "a4.jpg", "a5.jpg", "a6.jpg", "a7.jpg", "a8.jpg", "a9.jpg", "a10.jpg", "a11.jpg", "a12.jpg", "a13.jpg", "a14.jpg", "a15.jpg"};
 PImage[] clueImages = new PImage[clueImagesNames.length];
-String[] clueText = {
-  "Hard: This clue is animal 1\n\nMedium: This animal is known to be animal 1\n\nEasy: This animal is number 1",
-  "Hard: This clue is animal 2\n\nMedium: This animal is known to be animal 2\n\nEasy: This animal is number 2",
-  "Hard: This clue is animal 3\n\nMedium: This animal is known to be animal 3\n\nEasy: This animal is number 3"};
+String[][] clueText = {{"Has a holiday (February 2nd) named after it", "Also called woodchuck"},
+  {"Love to eat acorns", "Some species can fly/glide (but they don’t have wings)"},
+  {"Can turn their heads almost 360 degrees", "They have asymmetrical ears"},
+  {"Can deliver mail for humans over long distances", "Feed crop milk to their young"},
+  {"Hang upside down", "Use echolocation"},
+  {"Have large internal cheek pouches for food", "Eat foods like nuts, bird eggs, and mushrooms"},
+  {"The biggest animal on the floor", "Can run fast and swim"},
+  {"Bushy black and white striped tail", "Nocturnal with very good night vision"},
+  {"Insect with black spots", "Believed to bring good luck"},
+  {"Have webbed feet", "Create a ribbit/croak sound from a large throat"},
+  {"Covered in sharp spines", "Small rodent found on every continent (except Antarctica)"},
+  {"Have short limbs but long body and tail", "Move from water to land as they grow up (metamorphosis)"},
+  {"Older males have antlers", "Youth have white spots"},
+  {"Same family as dogs and wolves", "Common breed known for red fur"},
+  {"Bright red color", "Bird that prioritizes defending its territory"}};
 
 /*--- setup ---*/
 void setup() {
   size(1920, 1080); //fullscreen for monitor
-  BgLb = loadImage("BgLb.jpg"); //background image for leaderboard
-  BgClues = loadImage("BgClues.jpg");
+  BgLb = loadImage("BgLbBlur.jpg"); //background for leaderboard
+  BgClues = loadImage("BgCluesBlur.jpg");
   Trophy = loadImage("trophy.png");
   MkNotes = createFont("MarkerNotes.ttf", 10);
 
@@ -47,9 +59,55 @@ void setup() {
 
 /*--- main loop ---*/
 void draw() {
-  if (screen == 1) leaderboard();
-  else if (screen ==2) LbEdit();
-  else clues();
+  if (screen == 0) levelSelect();
+  else if (screen == 1) clues();
+  else if (screen == 2) leaderboard();
+  else if (screen == 3) lbEdit();
+}
+
+/*--- keybaord input and game logic ---*/
+void keyPressed() {
+  if (screen == 0) levelSelectLogic();
+  else if (screen == 1) cluesLogic();
+  else if (screen == 2) lbLogic();
+  else if (screen == 3) lbEditLogic();
+}
+
+/*-- individual logic for each screen ---*/
+//level select
+void levelSelectLogic() {
+  if (key == '1') clueLevel=0;
+  else if (key == '2') clueLevel=1;
+  else if (key == '3') clueLevel=2;
+  else screen = 1; //go to clues
+}
+//clues
+void cluesLogic() {
+  if (key == 'a') {
+    if (clueNum == 2) clueNum = 0;
+    else clueNum++;
+    // clueNum = int[random(0, 2)];
+  } else screen = 2; //go to leaderboard
+}
+//leaderboard
+void lbLogic() {
+  screen = 0;
+}
+//leaderboard
+void lbEditLogic() {
+  if (key == '\n' && typing.length() > 0) {
+    names[index] = typing;
+    typing = "";
+    screen = 2;
+  } else if ((key == '\b') && typing.length() > 0) {
+    typing = typing.substring(0, typing.length()-1);
+  } else typing = typing + key;
+}
+
+
+/*--- if mouse clicked ---*/
+void mousePressed() {
+  if (screen == 1) index = lbCheck();
 }
 
 /*--- leaderboard ---*/
@@ -69,11 +127,11 @@ void leaderboard() {
   image(Trophy, width/2+450, titleY-35, 100, 100);
 
   /*--- slots ---*/
-  LbSlots();
+  lbSlots();
 }
 
 /*--- leaderboard slots ---*/
-void LbSlots() {
+void lbSlots() {
   rectMode(CENTER);
   textFont(MkNotes, 50);
 
@@ -91,33 +149,8 @@ void LbSlots() {
   }
 }
 
-/*--- mouse clicked ---*/
-void mousePressed() {
-  if (screen == 1) index = LbCheck();
-}
-
-/*--- keybaord input ---*/
-void keyPressed() {
-  if (screen == 0) {
-    if (key == 'a') {
-      if(clueNum == 2) clueNum = 0;
-      else clueNum++; 
-      // clueNum = int[random(0, 2)];
-    }
-    else screen = 1;
-  } else if (screen == 2) {
-    if (key == '\n' && typing.length() > 0) {
-      names[index] = typing;
-      typing = "";
-      screen = 1;
-    } else if ((key == '\b') && typing.length() > 0) {
-      typing = typing.substring(0, typing.length()-1);
-    } else typing = typing + key;
-  } else screen = 0;
-}
-
 /*--- check which leaderboard slot was clicked ---*/
-int LbCheck() {
+int lbCheck() {
   int indexCheck = 0;
   int nameIndent = (width-listW)/2 + 150;
   int topOfList = listY-(listSpacing-15)/2;
@@ -134,7 +167,7 @@ int LbCheck() {
 }
 
 /*--- edit leaderboard window ---*/
-void LbEdit() {
+void lbEdit() {
   //window
   rectMode(CENTER);
   fill(5, 99, 19, 255);
@@ -161,30 +194,75 @@ void clues() {
   background(0);
   image(BgClues, 0, 0, width, height);
 
+  /*--- background box ---*/
+  fill(24, 128, 41, 185);
+  rectMode(CENTER);
+  rect(width/2, clueBoxY+clueBoxH/2, clueBoxW, clueBoxH, 15);
+
+  /*--- clues ---*/
+  if (clueLevel == 0) {
+    //image
+    textSize(50);
+    textAlign(CENTER);
+    text("animal closeup", imageX, imageY - imageSize/2 - 65);
+    imageMode(CENTER);
+    image(clueImages[clueNum], imageX, imageY, imageSize, imageSize);
+  } else {
+    int clueIndex = clueLevel-1; //converts 1-2 to 0-1
+    //titles
+    fill(255);
+    textSize(75);
+    text("Clues", width/2, clueBoxY + 125);
+    //text
+    textSize(50);
+    rectMode(CORNER);
+    textAlign(LEFT);
+    text(clueText[clueNum][clueIndex], (width-clueBoxW)/2 + 65, clueBoxY + 200, imageX-imageSize - 200, clueBoxY + clueBoxH - 100);
+  }
+}
+
+/*--- level selection window ---*/
+void levelSelect() {
+  //for level select
+  int boxWidth = 850, boxHeight = 550;
+  int cirlceY = 250, circleSpacing = 265;
+  int descY = 430;
+  String[][] desc = {{"Easy", "Images"}, {"Meduim", "Text Clues"}, {"Hard", "Text Clues"}};
+
+  /*--- background ---*/
+  imageMode(CORNER);
+  background(0);
+  image(BgClues, 0, 0, width, height);
+  rectMode(CENTER);
   /*--- title ---*/
   fill(255);
   textAlign(CENTER);
   textFont(MkNotes, 100);
   text("Jumbo Ispy", width/2, titleY);
-
-  /*--- clues ---*/
-  //background box
-  fill(24, 128, 41, 235);
-  rectMode(CENTER);
-  rect(width/2, clueBoxY+clueBoxH/2, clueBoxW, clueBoxH, 15);
-  //titles
+  /*--- box ---*/
+  fill(5, 99, 19, 255);
+  rect(width/2, height/2, boxWidth, boxHeight, 15);
+  /*--- box title ---*/
   fill(255);
-  textSize(75);
-  text("Clues", width/2, clueBoxY + 125);
-  //text
-  textSize(50);
-  rectMode(CORNER);
-  textAlign(LEFT);
-  text(clueText[clueNum], (width-clueBoxW)/2 + 65, clueBoxY + 200, imageX-imageSize - 200, clueBoxY + clueBoxH - 100);
-  //image
-  textSize(50);
   textAlign(CENTER);
-  text("animal closeup", imageX, imageY - imageSize/2 - 65);
-  imageMode(CENTER);
-  image(clueImages[clueNum], imageX, imageY, imageSize, imageSize);
+  textFont(MkNotes, 65);
+  text("Select Level", width/2, (height-boxHeight)/2 + 100);
+  /*--- level circles ---*/
+  ellipseMode(CENTER);
+  for (int i = 0; i <= 2; i++) {
+    if (clueLevel == i) fill(136, 236, 39);
+    else fill(255);
+    //circles
+    circle(width/2 - circleSpacing + circleSpacing*i, (height-boxHeight)/2 + cirlceY, 175);
+    fill(5, 99, 19);
+    //circle labels
+    textSize(100);
+    text(i+1, width/2 - circleSpacing + circleSpacing*i, (height-boxHeight)/2 + cirlceY + 38);
+    //descriptions
+    fill(255);
+    textSize(55);
+    text(desc[i][0], width/2 - circleSpacing + circleSpacing*i, (height-boxHeight)/2 + descY);
+    textSize(35);
+    text(desc[i][1], width/2 - circleSpacing + circleSpacing*i, (height-boxHeight)/2 + descY + 50);
+  }
 }
