@@ -76,33 +76,10 @@ void draw() {
   else if (screen == lbEditNum) lbEdit();
 }
 
-/*--- keybaord input and game logic ---*/
-// void keyPressed() {
-//   if (screen == 0) {
-//     if (key == '1') clueLevel=0;
-//     else if (key == '2') clueLevel=1;
-//     else if (key == '3') clueLevel=2;
-//     else screen = 1; //go to clues
-//   } else if (screen == 1) {
-//     if (key == 'a') {
-//       if (clueNum == 14) clueNum = 0;
-//       else clueNum++;
-//       // clueNum = int[random(0, 2)];
-//     } else screen = 2; //go to leaderboard
-//   } else if (screen == 2) {
-//     screen = 0; //go back to level select
-//   } else if (screen == 3) {
-//     if (key == '\n' && typing.length() > 0) {
-//       names[index] = typing;
-//       typing = "";
-//       screen = 2;
-//     } else if ((key == '\b') && typing.length() > 0) {
-//       typing = typing.substring(0, typing.length()-1);
-//     } else typing = typing + key;
-//   }
-// }
+/*--- game logic keyboard input ---*/
 void keyPressed() {
   if (screen == lvlNum) levelSelectLogic();
+  else if (screen == cdNum) countdownLogic();
   else if (screen == clNum) cluesLogic();
   else if (screen == lbNum) lbLogic();
   else if (screen == lbEditNum) lbEditLogic();
@@ -118,6 +95,10 @@ void levelSelectLogic() {
     startTimer();
     screen = cdNum; //go to countdown
   }
+}
+//countdown
+void countdownLogic(){
+    screen = clNum; //go back to level select
 }
 // clues
 void cluesLogic() {
@@ -302,7 +283,13 @@ void clues() {
     text(clueText[clueNum][clueIndex], (width-clueBoxW)/2 + 100, clueBoxY + 250, (width+clueBoxW)/2 - 100, clueBoxY + clueBoxH - 100);
   }
 
-  /*--- timer ---*/
+  final int progBarH = 50;
+  /*--- progress bar ---*/
+  rectMode(CORNER);
+  // fill(136, 236, 39);
+  fill(255);
+  float progress = (clueBoxW*(clueNum+1))/(clueImagesNames.length);
+  rect((width-clueBoxW)/2, clueBoxY+clueBoxH-progBarH, progress, progBarH, 15);
 }
 
 /*--- start timer ---*/
@@ -327,120 +314,11 @@ void countdownScreen() {
     if (currentTime != 0) text(currentTime, width/2, (height-boxHeight)/2 + 350); //from 5 to 1 numbers
     else text("GO!", width/2, (height-boxHeight)/2 + 350); //for 0 it says GO!
   } else {
-    screen = clNum; //go to clues screen
     startTimer(); //reset timer
+    screen = clNum; //go to clues screen
   }
 }
 
 /*-- timer ---*/
 void timerDisplay() {
-  // currentTime = (millis() - startTime)/1000;
 }
-
-
-// /*-- countdown code ---*/
-// int countdown() {
-//   long currentTime = (millis() - startTime)/1000;
-
-//   // public final int lightOffsetX = 280, lightStartY = 100, lightOffsetY = 75, lightSize = 50;
-
-//   /*--- box ---*/
-//   rectMode(CENTER);
-//   fill(5, 99, 19, 255);
-//   rect(width/2, height/2, boxWidth, boxHeight, 15);
-//   /*--- box title ---*/
-//   fill(255);
-//   textAlign(CENTER);
-//   textFont(MkNotes, 65);
-//   text("Get Ready!", width/2, (height-boxHeight)/2 + 100);
-
-//   text(currentTime, width/2, (height-boxHeight)/2 + 200);
-
-//   if (currentTime > 5) return(0);
-//   else return(1);
-//   /*--- level circles ---*/
-//   // ellipseMode(CENTER);
-//   // for (int i = 0; i <= 2; i++) {
-//   //   if (clueLevel == i) fill(136, 236, 39);
-//   //   else fill(255);
-//   //   //circles
-//   //   circle(width/2 - circleSpacing + circleSpacing*i, (height-boxHeight)/2 + cirlceY, 175);
-//   //   fill(5, 99, 19);
-//   //   //circle labels
-//   //   textSize(100);
-//   //   text(i+1, width/2 - circleSpacing + circleSpacing*i, (height-boxHeight)/2 + cirlceY + 38);
-//   //   //descriptions
-//   //   fill(255);
-//   //   textSize(55);
-//   //   text(desc[i][0], width/2 - circleSpacing + circleSpacing*i, (height-boxHeight)/2 + descY);
-//   //   textSize(35);
-//   //   text(desc[i][1], width/2 - circleSpacing + circleSpacing*i, (height-boxHeight)/2 + descY + 50);
-//   // }
-// }
-
-
-
-// class Timer {
-
-//   long startTime ; // time in msecs that timer started
-//   long timeSoFar ; // use to hold total time of run so far, useful in
-//   // conjunction with pause and continueRunning
-//   boolean running ;
-//   int x, y, textHeight; // location of timer output
-
-//   Timer(int inX, int inY, int textSize2){
-//     x = inX ;
-//     y = inY ;
-//     textHeight = textSize2;
-//     running = false ;
-//     timeSoFar = 0 ;
-//   }
-
-
-//   int currentTime(){
-//     if ( running )
-//       return ( (int) ( (millis() - startTime) / 1000.0) ) ;
-//     else
-//       return ( (int) (timeSoFar / 1000.0) ) ;
-//   }
-
-//   void start(){
-//     running = true ;
-//     startTime = millis() ;
-//   }
-
-//   void restart() { // reset the timer to zero and restart, identical to start
-//     start() ;
-//   }
-
-//   void pause(){
-//     if (running){
-//       timeSoFar = millis() - startTime ;
-//       running = false ;
-//     }// else do nothing, pause already called
-//   }
-
-//   void continueRunning()  {
-//         // called after stop to restart the timer running
-//     // no effect if already running
-//     if (!running)  {
-//       startTime = millis() - timeSoFar ;
-//       running = true ;
-//     }
-//   }
-
-//   void DisplayTime() {
-//     int theTime ;
-//     String output = "";
-
-//     theTime = currentTime() ;
-//     output = output + theTime ;
-
-//     // println("output = " + output) ;
-//     fill(150, 0, 200) ;
-//     // PFont font ;
-//     // font = loadFont("Arial-Black-48.vlw") ;
-//     textFont(MarkerNotes,textHeight);
-//     text(output, x, y) ;
-//   }
-// }
