@@ -1,4 +1,4 @@
-//prototype leaderboard
+`//prototype leaderboard
 // import data.clues
 
 /*--- variables ---*/
@@ -312,7 +312,11 @@ void startTimer() {
 
 /*-- countdown screen ---*/
 void countdownScreen() {
-  if (int(millis() - startTime) < 6000) { //6 second timer, counts up from start
+  // long startTime2 = millis();
+
+  int countdownRun = 1;
+  // startTime = millis();
+  if (int(millis() - startTime) < 5000) { //counts up to 5
     int currentTime = int(5-(millis() - startTime)/1000); //counts down from 5 to 1 visually
     /*--- box ---*/
     rectMode(CENTER);
@@ -323,13 +327,8 @@ void countdownScreen() {
     textAlign(CENTER);
     textFont(MkNotes, 65);
     text("Get Ready!", width/2, (height-boxHeight)/2 + 100);
-    textFont(MkNotes, 150);
-    if (currentTime != 0) text(currentTime, width/2, (height-boxHeight)/2 + 350); //from 5 to 1 numbers
-    else text("GO!", width/2, (height-boxHeight)/2 + 350); //for 0 it says GO!
-  } else {
-    screen = clNum; //go to clues screen
-    startTimer(); //reset timer
-  }
+    text(currentTime, width/2, (height-boxHeight)/2 + 200);
+  } else screen = clNum;
 }
 
 /*-- timer ---*/
