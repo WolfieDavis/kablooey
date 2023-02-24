@@ -1,7 +1,11 @@
 //prototype leaderboard
 // import data.clues
+// import processing.serial.*; //import serial library
 
 /*--- variables ---*/
+//serial port
+// Serial port; //import serial port
+
 //overall
 final int width = 1920, height = 1080;
 final int lvlNum = 0, cdNum = 1, clNum = 2, lbNum = 3, lbEditNum = 4; //screen numbers
@@ -20,7 +24,7 @@ int index = 0;
 public final int titleY = 175, listY = 275, listW = 1000, listSpacing = 80;
 String typing = "";
 String[] names = {"one", "two", "three", "four", "five", "size", "seven", "eight", "nine", "ten"};
-int[] scores = {24, 25, 50, 70, 75, 80, 120, 225, 250, 300};
+int[] scores = {24, 25, 50, 70, 75, 80};//, 120, 225, 250, 300};
 
 //for clues
 int clueNum = 0;
@@ -55,10 +59,15 @@ public final String[][] clueText = {{"Has a holiday (February 2nd) named after i
 /*--- setup ---*/
 void setup() {
   size(1920, 1080); //fullscreen for monitor
+
   BgLb = loadImage("BgLbBlur.jpg"); //background for leaderboard
   BgClues = loadImage("BgCluesBlur.jpg");
   Trophy = loadImage("trophy.png");
   MkNotes = createFont("MarkerNotes.ttf", 10);
+
+  // printArray(Serial.list());
+  // port = new Serial(this, Serial.list()[2], 9600); //COM4
+  //recievedNum = port.read(); //5 or 11 or /dev/tty.usbserial-1420 also /dev/tty.usbserial-14xx or /dev/cu.usbserial-14xx
 
   //initialize array of images for clues
   for (int i = 0; i < clueImagesNames.length; i++) {
@@ -97,8 +106,8 @@ void levelSelectLogic() {
   }
 }
 //countdown
-void countdownLogic(){
-    screen = clNum; //go back to level select
+void countdownLogic() {
+  screen = clNum; //go back to level select
 }
 // clues
 void cluesLogic() {
@@ -199,12 +208,21 @@ void lbSlots() {
     fill(24, 128, 41, 235);
     rect(width/2, listY+listSpacing*i, listW, listSpacing-15, 15);
     //text
-    fill(255);
     textAlign(LEFT, CENTER);
-    text("#" + (i+1), (width-listW)/2 + 15, listY+listSpacing*i -5);
-    text(names[i], (width-listW)/2 + 150, listY+listSpacing*i -5);
-    textAlign(RIGHT, CENTER);
-    text(scores[i], (width+listW)/2 - 15, listY+listSpacing*i -5);
+    if (i < scores.length) {
+      fill(255);
+      text("#" + (i+1), (width-listW)/2 + 15, listY+listSpacing*i -5);
+      text(names[i], (width-listW)/2 + 150, listY+listSpacing*i -5);
+      textAlign(RIGHT, CENTER);
+      text(scores[i], (width+listW)/2 - 15, listY+listSpacing*i -5);
+    } else {
+      // fill(139, 139, 137);
+      fill(255, 255, 255, 35);
+      text("#" + (i+1), (width-listW)/2 + 15, listY+listSpacing*i -5);
+      text("name", (width-listW)/2 + 150, listY+listSpacing*i -5);
+      textAlign(RIGHT, CENTER);
+      text("---", (width+listW)/2 - 15, listY+listSpacing*i -5);
+    }
   }
 }
 

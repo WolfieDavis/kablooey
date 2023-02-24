@@ -1,23 +1,27 @@
-byte buttons[] = {12, 13, 14};
-byte pressed[3], justPressed[3], justReleased[3];
+byte buttons[] = {6, 8, 10, 12};
+byte pressed[sizeof(buttons)], justPressed[sizeof(buttons)], justReleased[sizeof(buttons)];
 
 void setup() {
   for (short i = 0; i < sizeof(buttons); i++) {
     pinMode(buttons[i], INPUT_PULLUP);
     digitalWrite(buttons[i], HIGH);
   }
+  Serial.begin(9600);
 }
 
 void loop() {
   checkButtons(); // update button states with debouncing
 
-  if (justPressed[0]){
+  if (justPressed[0]) Serial.print(0);
+  else if (justPressed[1])Serial.print(1);
+  else if (justPressed[2])Serial.print(2);
+  else if (justPressed[3])Serial.print(3);
 
-  }
+
 }
 
 void checkButtons() {
-  static short debounceTime = 10;            // ms to debounce
+  static float debounceTime = 10;            // ms to debounce
   static byte prevState[sizeof(buttons)];    // array for previous burron states
   static byte currentState[sizeof(buttons)]; // array for current button states
   static long lastTime;                      // time when it was last run
