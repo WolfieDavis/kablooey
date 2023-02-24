@@ -1,10 +1,9 @@
 //prototype leaderboard
 // import data.clues
-// import processing.serial.*; //import serial library
+import processing.serial.*; //import serial library
 
 /*--- variables ---*/
-//serial port
-// Serial port; //import serial port
+Serial port; //import serial port
 
 //overall
 final int width = 1920, height = 1080;
@@ -65,8 +64,8 @@ void setup() {
   Trophy = loadImage("trophy.png");
   MkNotes = createFont("MarkerNotes.ttf", 10);
 
-  // printArray(Serial.list());
-  // port = new Serial(this, Serial.list()[2], 9600); //COM4
+  printArray(Serial.list());
+  port = new Serial(this, Serial.list()[2], 9600); //COM4
   //recievedNum = port.read(); //5 or 11 or /dev/tty.usbserial-1420 also /dev/tty.usbserial-14xx or /dev/cu.usbserial-14xx
 
   //initialize array of images for clues
@@ -78,11 +77,39 @@ void setup() {
 
 /*--- main loop ---*/
 void draw() {
+  while (port.available () > 0) hardwareInput(); //read in values from arduino
+
+  //draw screen based on logic from hardwareInput
   if (screen == lvlNum) levelSelect();
   else if (screen == cdNum) countdownScreen();
   else if (screen == clNum) clues();
   else if (screen == lbNum) leaderboard();
   else if (screen == lbEditNum) lbEdit();
+}
+
+/*--- game logic hardware input ---*/
+void hardwareInput() {
+  int value = port.read();
+
+  if (screen == lvlNum) {
+    if (value == 1) clueLevel=0;
+    else if (value == 2) clueLevel=1;
+    else if (value == 3) clueLevel=2;
+    else if (value == 0) {
+      startTimer();
+      screen = cdNum; //go to countdown
+    }
+  } else if (screen == cdNum) {
+    if (value == 0) screen = clNum; //go back to level select
+  } else if (screen == clNum) {
+    if (value == 1) {
+      if (clueNum == 14) clueNum = 0;
+      else clueNum++;
+      // clueNum = int[random(0, 2)];
+    } else if (value == 0) screen = lbNum; //go to leaderboard
+  } else if (screen == lbNum){
+    if (value == 0) screen = lvlNum;
+  }
 }
 
 /*--- game logic keyboard input ---*/
