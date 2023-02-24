@@ -1,5 +1,5 @@
 {
     "board": "arduino:avr:uno",
-    "sketch": "jumboispy.ino",
-    "programmer": "arduino:arduinoisp"
+    "programmer": "arduino:arduinoisp",
+    "port": "COM7"
 }

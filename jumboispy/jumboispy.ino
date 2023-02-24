@@ -12,11 +12,15 @@ void setup() {
 void loop() {
   checkButtons(); // update button states with debouncing
 
-  if (justPressed[0]) Serial.write(0);
-  else if (justPressed[1])Serial.write(1);
-  else if (justPressed[2])Serial.write(2);
-  else if (justPressed[3])Serial.write(3);
+  for (int i = 0; i < sizeof(buttons); i++) if (justPressed[i]) Serial.write(i);
 
+  delay(50);
+  
+
+  // if (justPressed[0]) Serial.write(0);
+  // else if (justPressed[1])Serial.write(1);
+  // else if (justPressed[2])Serial.write(2);
+  // else if (justPressed[3])Serial.write(3);
 
 }
 
