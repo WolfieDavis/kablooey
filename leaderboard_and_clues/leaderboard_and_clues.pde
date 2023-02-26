@@ -7,7 +7,7 @@ Serial port; //import serial port
 
 //overall
 final int width = 1920, height = 1080;
-final int lvlNum = 0, cdNum = 1, clNum = 2, lbNum = 3, lbEditNum = 4; //screen numbers
+final int lvlNum = 0, cdNum = 1, clNum = 2, scNum = 3, lbNum = 4, lbEditNum = 5; //screen numbers
 int screen = 0; //screen index
 
 //for level select
@@ -22,18 +22,19 @@ PImage BgLb, BgClues, Trophy;
 int index = 0;
 public final int titleY = 175, listY = 275, listW = 1000, listSpacing = 80;
 String typing = "";
-String[] names = {"one", "two", "three", "four", "five", "size", "seven", "eight", "nine", "ten"};
+String[] names = {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
 int[] scores = {24, 25, 50, 70, 75, 80};//, 120, 225, 250, 300};
 
 //for clues
 int clueNum = 0;
 int clueLevel = 0;
-public final int clueBoxW = 1250, clueBoxY = 100, clueBoxH = height - clueBoxY - 50;
+public final int clueBoxW = 1250, clueBoxY = 100, clueBoxH = height - clueBoxY - 50, progBarH = 50;
 public final int imageSize = 300;
 public final int imageX = (width+clueBoxW)/2 - imageSize + 50;
 public final int imageY = clueBoxY+clueBoxH/2 + 100;
 //for timer for clues
 long startTime;
+String currentScore;
 // long currentTime;
 
 //actual question info
@@ -65,7 +66,7 @@ void setup() {
   MkNotes = createFont("MarkerNotes.ttf", 10);
 
   printArray(Serial.list());
-  port = new Serial(this, Serial.list()[2], 9600); //COM4
+  port = new Serial(this, Serial.list()[2], 9600); //COM7
   //recievedNum = port.read(); //5 or 11 or /dev/tty.usbserial-1420 also /dev/tty.usbserial-14xx or /dev/cu.usbserial-14xx
 
   //initialize array of images for clues
@@ -83,6 +84,7 @@ void draw() {
   if (screen == lvlNum) levelSelect();
   else if (screen == cdNum) countdownScreen();
   else if (screen == clNum) clues();
+  else if (screen == scNum) scoreScreen();
   else if (screen == lbNum) leaderboard();
   else if (screen == lbEditNum) lbEdit();
 }
@@ -103,11 +105,14 @@ void hardwareInput() {
     if (value == 0) screen = clNum; //go back to level select
   } else if (screen == clNum) {
     if (value == 1) {
-      if (clueNum == 14) clueNum = 0;
-      else clueNum++;
-      // clueNum = int[random(0, 2)];
-    } else if (value == 0) screen = lbNum; //go to leaderboard
-  } else if (screen == lbNum){
+      if (clueNum == 14) {
+        clueNum = 20;
+        // screen = scNum;
+      } else clueNum++;
+    } //else if (value == 0) screen = lbNum; //go to leaderboard
+  } else if (screen == scNum) {
+    startTimer();
+  } else if (screen == lbNum) {
     if (value == 0) screen = lvlNum;
   }
 }
@@ -139,10 +144,12 @@ void countdownLogic() {
 // clues
 void cluesLogic() {
   if (key == 'a') {
-    if (clueNum == 14) clueNum = 0;
-    else clueNum++;
+    if (clueNum == 14) {
+      clueNum = 20;
+      // screen = scNum;
+    } else clueNum++;
     // clueNum = int[random(0, 2)];
-  } else screen = lbNum; //go to leaderboard
+  } //else screen = lbNum; //go to leaderboard
 }
 //leaderboard
 void lbLogic() {
@@ -318,23 +325,50 @@ void clues() {
     textAlign(CENTER);
     text("animal closeup", width/2, imageY - imageSize/2 - 65);
     imageMode(CENTER);
-    image(clueImages[clueNum], width/2, imageY, imageSize, imageSize);
+    if (clueNum != 20) image(clueImages[clueNum], width/2, imageY, imageSize, imageSize);
   } else {
     int clueIndex = clueLevel-1; //converts 1-2 to 0-1 for the array index
     //text
     textSize(50);
     rectMode(CORNER);
     textAlign(LEFT);
-    text(clueText[clueNum][clueIndex], (width-clueBoxW)/2 + 100, clueBoxY + 250, (width+clueBoxW)/2 - 100, clueBoxY + clueBoxH - 100);
+    if (clueNum != 20) text(clueText[clueNum][clueIndex], (width-clueBoxW)/2 + 100, clueBoxY + 250, (width+clueBoxW)/2 - 100, clueBoxY + clueBoxH - 100);
   }
 
-  final int progBarH = 50;
   /*--- progress bar ---*/
   rectMode(CORNER);
   // fill(136, 236, 39);
   fill(255);
   float progress = (clueBoxW*(clueNum+1))/(clueImagesNames.length);
   rect((width-clueBoxW)/2, clueBoxY+clueBoxH-progBarH, progress, progBarH, 15);
+
+  /*--- timer ---*/
+  clueStopwatch();
+}
+
+void clueStopwatch() {
+  int currentSec = int((millis() - startTime)/1000);
+  int currentFracSec = int((millis() - startTime)/10 - currentSec*100);
+
+  fill(255);
+  textAlign(CENTER);
+  textFont(MkNotes, 65);
+
+  if (clueNum == 20) {
+    saveScore(currentSec, currentFracSec);
+    // int currentFracSec = int((millis() - startTime)/10 - currentSec*100);
+    // String currentScore = currentSec + "." + currentFracSec;
+    // text(currentScore, width/2 + 100, clueBoxY+clueBoxH-progBarH-65);
+  }
+
+  text(currentSec, width/2, clueBoxY+clueBoxH-progBarH-65);
+}
+
+void saveScore(int currentSec2, int currentFracSec2) {
+  currentScore = currentSec2 + "." + currentFracSec2;
+  //code will go here for adding the score to the leaderboard saved to another file
+  screen = scNum;
+  startTimer();
 }
 
 /*--- start timer ---*/
@@ -364,6 +398,25 @@ void countdownScreen() {
   }
 }
 
-/*-- timer ---*/
-void timerDisplay() {
+/*-- score display screen ---*/
+void scoreScreen() {
+  imageMode(CORNER);
+  background(0);
+  image(BgClues, 0, 0, width, height);
+  if (int(millis() - startTime) < 6500) { //6.5 second timer
+    /*--- box ---*/
+    rectMode(CENTER);
+    fill(5, 99, 19, 255);
+    rect(width/2, height/2, boxWidth, boxHeight, 15);
+    /*--- box title ---*/
+    fill(255);
+    textAlign(CENTER);
+    textFont(MkNotes, 65);
+    text("Your score:", width/2, (height-boxHeight)/2 + 100);
+    textFont(MkNotes, 150);
+    text(currentScore + " s", width/2, (height-boxHeight)/2 + 350); //for 0 it says GO!
+  } else {
+    // startTimer(); //reset timer
+    screen = lbNum; //go to leaderboard screen
+  }
 }
