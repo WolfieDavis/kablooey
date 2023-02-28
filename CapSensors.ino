@@ -3,9 +3,9 @@
 
 */
 //initialize caps
-int num_sensors=2;
+int numSensors=5;
 
-int analogPins[]={A0, A1, A2, A3, A4, A5, A6};
+int analogPins[]={A0, A1, A2, A3, A4, A5};
 
 int chargePins[]={13, 11, 9, 7, 5, 3};
 
@@ -13,7 +13,7 @@ int dischargePins[]={12, 10, 8, 6, 4, 2};
 
 
 //capacitances when not stepped on
-long capbases[]={11600, 11600};
+long capbases[]={13000, 13000, 13000, 13000, 13000, 13000, 13000};
 
 
 // Initialize Resistor
@@ -34,7 +34,7 @@ int writes[]={10, 11, 12, 13, 14, 15};
 
 void setup()
 {
-  for (int sensor=0; sensor<num_sensors; sensor++){
+  for (int sensor=0; sensor<numSensors; sensor++){
     pinMode(chargePins[sensor], OUTPUT);
     digitalWrite(chargePins[sensor], LOW); 
   }
@@ -45,7 +45,7 @@ void setup()
 
 void loop(){
   
-  for (int sensor=0; sensor<num_sensors; sensor++){
+  for (int sensor=0; sensor<numSensors; sensor++){
     digitalWrite(chargePins[sensor], LOW); //stops charging caps
     pinMode(dischargePins[sensor], OUTPUT);
     digitalWrite(dischargePins[sensor], LOW); //lets caps discharge
@@ -53,7 +53,7 @@ void loop(){
   }
 
   //take voltage readings, get tau, find capacitance for each sensor
-  for (int sensor=0; sensor<num_sensors; sensor++){
+  for (int sensor=0; sensor<numSensors; sensor++){
     
     while(analogRead(analogPins[sensor])>0){
       // do nothing until cap discharged
@@ -91,4 +91,14 @@ void loop(){
 //like the delay would just be you'd have to stand there for a bit to get the sensor to sense (i think right?) but that could be ok depending on how long that is? do the math/collect data?
 //cap1=number 10
 //arrays for pin vars
-//yee it works for 2! now hook up 6 sensors
+//yee it works for 2! now hook up 6 sensors, but first, hook up 2 at a time to check if they all have 11600 as base cap
+
+//base cap is like 11600, but sometimes jumps up a bit to like 12000, so only write if it goes above to like 13000 (22800 is what it is when stepped on)
+
+//also when we have the physical board, how does that aspect effect these sensors (like standing, more pressure from board, idk)
+
+//works great for 2, something funny with 5 (could be just hooking up wrong) or maybe it's the sensors themsleves (check 3,4,5 again)
+//working caps have duct tape
+//can do 4 sensors well
+
+//make extra sensors to use if something if funny with one?
