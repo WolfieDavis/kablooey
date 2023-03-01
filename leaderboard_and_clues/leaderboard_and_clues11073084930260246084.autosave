@@ -8,7 +8,7 @@ Serial port; //import serial port
 //overall
 final int width = 1920, height = 1080;
 final int lvlNum = 0, cdNum = 1, clNum = 2, scNum = 3, lbNum = 4, lbEditNum = 5; //screen numbers
-int screen = 0; //screen index
+int screen = 0; //screen index 
 
 //for level select
 public final int boxWidth = 850, boxHeight = 550;
@@ -24,7 +24,7 @@ public final int titleY = 175, listY = 275, listW = 1000, listSpacing = 80;
 String typing = "";
 public final String[] nameOptions = {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
 String[] names= {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
-float[] scores = {999999};//24.00, 25.00, 50.00, 70.00, 75.00, 80.00};//, 120, 225, 250, 300};
+float[] scores = {0};//24.00, 25.00, 50.00, 70.00, 75.00, 80.00};//, 120, 225, 250, 300};
 // int[] scoreMath;
 
 //for clues
@@ -377,7 +377,7 @@ void saveScore(int currentSec2, int currentFracSec2) {
   int i = 0;
   // for (int i = 0; i < scores.length; i++) {
   // scores[i] = scores[i]+1.00;
-  if (scores[i] != 999999) {
+  if (scores.length != 0) {
     do {
       if (currentScore < scores[i]) {
         // names = expand(names, names.length + 1);
@@ -388,11 +388,8 @@ void saveScore(int currentSec2, int currentFracSec2) {
         }
         scores[i] = currentScore;
         keepRunning = 0;
-      } else if (i < scores.length - 1) i++;
-      else {
-        scores = expand(scores, scores.length + 1);
-        scores[i] = currentScore;
       }
+      i++;
     } while (keepRunning == 1);
   } else scores[0] = currentScore;
   // }
