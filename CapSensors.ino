@@ -3,33 +3,32 @@
 
 */
 //initialize caps
-int numSensors=5;
+int numSensors=10;
 
-int analogPins[]={A0, A1, A2, A3, A4, A5};
+int analogPins[]={A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14};
 
-int chargePins[]={13, 11, 9, 7, 5, 3};
+int chargePins[]={22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52};
 
-int dischargePins[]={12, 10, 8, 6, 4, 2};
-
+int dischargePins[]={23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, 51, 53};
 
 //capacitances when not stepped on
-long capbases[]={13000, 13000, 13000, 13000, 13000, 13000, 13000};
+long capbases[]={13000, 13000, 13000, 13000, 13000,     13000, 13000, 13000, 13000, 13000,    13000, 13000, 13000, 13000, 13000};
 
 
 // Initialize Resistor
 int resistorValue = 10000;
 
 // Initialize Timer
-unsigned long startTimes[]={0, 0, 0 , 0, 0, 0 };
+unsigned long startTimes[]={0, 0, 0 , 0, 0,    0, 0, 0, 0 , 0,    0, 0, 0, 0, 0};
 
 //initilize time constants
-unsigned long taus[]={ 0, 0, 0, 0, 0, 0};
+unsigned long taus[]={0, 0, 0 , 0, 0,    0, 0, 0, 0 , 0,    0, 0, 0, 0, 0};
 
 // Initialize Capacitance Variables  
-float picoFarads[]={0, 0, 0, 0, 0, 0,};             
+float picoFarads[]={0, 0, 0 , 0, 0,    0, 0, 0, 0 , 0,    0, 0, 0, 0, 0};             
 
 //these are the sensor nums of the caps (cap1=10)
-int writes[]={10, 11, 12, 13, 14, 15};
+int writes[]={0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
 
 
 void setup()
@@ -87,18 +86,9 @@ void loop(){
   delay(500);
 }
 
-//how will this translate to 15 sensors? if done all sequentially, will there be too much of a delay with cap15? prob not hopefully
-//like the delay would just be you'd have to stand there for a bit to get the sensor to sense (i think right?) but that could be ok depending on how long that is? do the math/collect data?
-//cap1=number 10
-//arrays for pin vars
-//yee it works for 2! now hook up 6 sensors, but first, hook up 2 at a time to check if they all have 11600 as base cap
 
 //base cap is like 11600, but sometimes jumps up a bit to like 12000, so only write if it goes above to like 13000 (22800 is what it is when stepped on)
 
 //also when we have the physical board, how does that aspect effect these sensors (like standing, more pressure from board, idk)
 
-//works great for 2, something funny with 5 (could be just hooking up wrong) or maybe it's the sensors themsleves (check 3,4,5 again)
-//working caps have duct tape
-//can do 4 sensors well
-
-//make extra sensors to use if something if funny with one?
+//works great for 2, something funny with 5 (something funny with A4 and A5)
