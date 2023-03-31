@@ -7,7 +7,7 @@ import processing.serial.*; //import serial library
 
 //overall
 final int width = 1920, height = 1080;
-final int lvlNum = 0, cdNum = 1, clNum = 2, scNum = 3, lbNum = 4, scNumLock = 5; //screen numbers
+final int lvlNum = 0, cdNum = 1, clNum = 2, scNum = 3, lbNum = 4; //screen numbers
 int screen = 0; //screen index
 
 //for level select
@@ -22,12 +22,12 @@ PImage BgLb, BgClues, Trophy;
 int index = 0;
 public final int titleY = 200, listY = 225, listW = 1000, listSpacing = 87;
 String typing = "";
-int nameOption = 0;
 String[] nameOptions = {"Beamer", 	"Buck", 	"Buckley", 	"Buster", 	"Captain", 	"Casper", 	"Chip", 	"Derby", 	"Droopy", 	"Eddie", 	"Ghost", 	"Hershey", 	"Hollywood", 	"Holyfield", 	"Ivan", 	"Lucky", 	"Marvin", 	"Maximus", 	"Oscar", 	"Prince", 	"Roscoe", 	"Tex", 	"Thor", 	"Tyrone", 	"Velvet", 	"Whitey", 	"Zeus", 	"Canyon", 	"Frost", 	"Tundra", 	"Lucky", 	"Romulus", 	"Aragorn", 	"Lobo", 	"Aztec", 	"Silver", 	"Dakota", 	"Timber", 	"Lance", 	"Winter", 	"Sabre", 	"Peter", 	"Asher", 	"Kiba"};
-String[] names= {"one"};//, "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
-// String[] names= {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
+// String[] names= {"one"};//, "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
+String[] names= {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
 float[] scores = {999999};//24.00, 25.00, 50.00, 70.00, 75.00, 80.00};//, 120, 225, 250, 300};
 String[] levelOfScore = {"Easy"};
+// int[] scoreMath;
 
 //for clues
 int clueNum = 0;
@@ -91,7 +91,6 @@ void draw() {
   else if (screen == cdNum) countdownScreen();
   else if (screen == clNum) clues();
   else if (screen == scNum) scoreScreen();
-  else if (screen == scNumLock) scoreScreenLocked();
   else if (screen == lbNum) leaderboard();
 }
 
@@ -107,10 +106,10 @@ void draw() {
 //       startTimer();
 //       screen = cdNum; //go to countdown
 //     }
-//   } else if (screen == cdNum) {
+//   } else if (screen == cdNum) { 
 //     // if (value == 0) screen = clNum; //go to clues
 //   } else if (screen == clNum) {
-//     if (value == clueNum) {
+//     if (value == 0) {
 //       // if (clueNum == 14) {
 //       // clueNum = 20;
 //       // screen = scNum;
@@ -164,7 +163,6 @@ void cluesLogic() {
 //leaderboard
 void lbLogic() {
   screen = lvlNum; //go back to level select
-  if (key == '1') screen = scNumLock;
   // clueLevel = 0; //reset clue level
 }
 
@@ -203,6 +201,7 @@ void levelSelect() {
     if (i == 0) fill(51, 149, 26);//fill(136, 236, 39);
     else if (i==1) fill(222, 191, 39);
     else fill(216, 83, 66);
+
     circle(width/2 - circleSpacing + circleSpacing*i, (height-boxHeight)/2 + cirlceY, circleR);
     //circle labels
     if (clueLevel == i) fill(255);
@@ -264,12 +263,12 @@ void lbSlots() {
   textFont(MkNotes, 50);
 
   for (int i = 0; i < 10; i++) {
+    //rectangles
+    fill(24, 128, 41, 235);
+    rect(width/2, listY+listSpacing*i, listW, listSpacing-18, 15);
+    //text
     textAlign(LEFT, CENTER);
     if (i < scores.length) {
-    //rectangles
-      fill(24, 128, 41, 235);
-      rect(width/2, listY+listSpacing*i, listW, listSpacing-18, 15);
-    //text
       fill(255);
       text("#" + (i+1), (width-listW)/2 + 15, listY+listSpacing*i -5);
       text(names[i], (width-listW)/2 + 150, listY+listSpacing*i -5);
@@ -278,10 +277,7 @@ void lbSlots() {
       textAlign(LEFT, CENTER);
       text(levelOfScore[i], (width-listW)/2 + 425, listY+listSpacing*i -5);
     } else {
-    //rectangles
-      fill(24, 128, 41, 125);
-      rect(width/2, listY+listSpacing*i, listW, listSpacing-18, 15);
-    //text
+      // fill(139, 139, 137);
       fill(255, 255, 255, 35);
       text("#" + (i+1), (width-listW)/2 + 15, listY+listSpacing*i -5);
       text("name", (width-listW)/2 + 150, listY+listSpacing*i -5);
@@ -307,16 +303,17 @@ void clues() {
   /*--- title ---*/
   textAlign(CENTER);
   fill(255);
-  textSize(125);
+  textSize(100);
   text("Clue " + (clueNum+1), width/2, clueBoxY + 125);
-  textSize(50);
-  if (clueLevel != 0) text(desc[clueLevel], width/2, clueBoxY + 200);
+  textSize(35);
+  text(desc[clueLevel], width/2, clueBoxY + 185);
 
   /*--- clues ---*/
-  if (clueLevel == 0) { //image
+  if (clueLevel == 0) {
+    //image
     textSize(50);
     textAlign(CENTER);
-    text("image closeup", width/2, clueBoxY + 200);
+    text("animal closeup", width/2, imageY - imageSize/2 - 65);
     imageMode(CENTER);
     if (clueNum != 15) image(clueImages[clueNum], width/2, imageY, imageSize, imageSize);
   } else {
@@ -366,28 +363,27 @@ void saveScore(int currentSec2, int currentFracSec2) {
   int i = 0;
   // for (int i = 0; i < scores.length; i++) {
   // scores[i] = scores[i]+1.00;
-  String thisName = nameOptions[nameOption];
+  // String thisName = nameOptions[nameOptions.length-1];
   // nameOptions = shorten(nameOptions);
-
 
   if (scores[i] != 999999) {
     do {
       if (currentScore < scores[i]) {
-        names = expand(names, names.length + 1);
+        // names = expand(names, names.length + 1);
         scores = expand(scores, scores.length + 1);
         levelOfScore = expand(levelOfScore, scores.length + 1);
         for (int j = (scores.length-1); j > i; j--) {
           scores[j] = scores[j-1];
           levelOfScore[j] = levelOfScore[j-1];
-          names[j] = names[j-1];
+          // names[j] = names[j-1];
         }
         scores[i] = currentScore;
 
-        if (clueLevel == 0) levelOfScore[i] = desc[0];
-        else if (clueLevel == 1) levelOfScore[i] = desc[1];
-        else levelOfScore[i] = desc[2];
+        if (clueLevel == 0) levelOfScore[i] = "easy";
+        else if (clueLevel == 1) levelOfScore[i] = "medium";
+        else levelOfScore[i] = "hard";
 
-        names[i] = thisName;
+        // names[i] = thisName;
         lbPosition = i+1;
         keepRunning = 0;
       } else if (i < scores.length - 1) {
@@ -397,23 +393,23 @@ void saveScore(int currentSec2, int currentFracSec2) {
         levelOfScore = expand(levelOfScore, scores.length + 1);
         scores[i+1] = currentScore;
 
-        if (clueLevel == 0) levelOfScore[i+1] = desc[0];
-        else if (clueLevel == 1) levelOfScore[i+1] = desc[1];
-        else levelOfScore[i+1] = desc[2];
+        if (clueLevel == 0) levelOfScore[i+1] = "easy";
+        else if (clueLevel == 1) levelOfScore[i+1] = "medium";
+        else levelOfScore[i+1] = "hard";
 
         lbPosition = i+2;
         keepRunning = 0;
-        names = expand(names, names.length + 1);
-        names[i] = thisName;
+        // names = expand(names, names.length + 1);
+        // names[i] = thisName;
       }
     } while (keepRunning == 1);
   } else {
     scores[0] = currentScore;
 
-    if (clueLevel == 0) levelOfScore[i] = desc[0];
-    else if (clueLevel == 1) levelOfScore[i] = desc[1];
-    else levelOfScore[i] = desc[2];
-    names[0] = thisName;
+    if (clueLevel == 0) levelOfScore[0] = "easy";
+    else if (clueLevel == 1) levelOfScore[0] = "medium";
+    else levelOfScore[i] = "hard";
+    // names[0] = thisName;
     lbPosition = 1;
   }
 
@@ -421,9 +417,6 @@ void saveScore(int currentSec2, int currentFracSec2) {
   clueNum = 0; //reset clues
   startTimer(); //reset timer
   screen = scNum; //change screen to score display
-  
-  if (nameOption < nameOptions.length) nameOption++; //go to the next name in the list
-  else nameOption = 0; //back to beginning
 }
 
 /*--- start timer ---*/
@@ -440,38 +433,18 @@ void scoreScreen() {
     /*--- box ---*/
     rectMode(CENTER);
     fill(5, 99, 19, 255);
-    rect(width/2, height/2, boxWidth, boxHeight, 35);
+    rect(width/2, height/2, boxWidth, boxHeight, 15);
     /*--- box title ---*/
     fill(255);
     textAlign(CENTER);
     textSize(100);
     text("Your score:", width/2, height/2 - 250);
-    textSize(275);
+    textSize(250);
     text(currentScore + " s", width/2, height/2 + 100); //for 0 it says GO!
-    textSize(85);
+    textSize(90);
     text("Rank: #" + lbPosition + "!", width/2, height/2 + 315);
   } else {
     // startTimer(); //reset timer
     screen = lbNum; //go to leaderboard screen
   }
-}
-
-/*-- score display screen but stationary ---*/
-void scoreScreenLocked() {
-  imageMode(CORNER);
-  background(0);
-  image(BgClues, 0, 0, width, height);
-  /*--- box ---*/
-  rectMode(CENTER);
-  fill(5, 99, 19, 255);
-  rect(width/2, height/2, boxWidth, boxHeight, 15);
-  /*--- box title ---*/
-  fill(255);
-  textAlign(CENTER);
-  textSize(100);
-  text("Your score:", width/2, height/2 - 250);
-  textSize(275);
-  text(currentScore + " s", width/2, height/2 + 100); //for 0 it says GO!
-  textSize(85);
-  text("Rank: #" + lbPosition + "!", width/2, height/2 + 315);
 }

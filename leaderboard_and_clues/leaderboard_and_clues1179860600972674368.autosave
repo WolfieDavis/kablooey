@@ -309,14 +309,14 @@ void clues() {
   fill(255);
   textSize(125);
   text("Clue " + (clueNum+1), width/2, clueBoxY + 125);
-  textSize(50);
-  if (clueLevel != 0) text(desc[clueLevel], width/2, clueBoxY + 200);
+  textSize(75);
+  text(desc[clueLevel], width/2, clueBoxY + 200);
 
   /*--- clues ---*/
   if (clueLevel == 0) { //image
     textSize(50);
     textAlign(CENTER);
-    text("image closeup", width/2, clueBoxY + 200);
+    text("animal closeup", width/2, imageY - imageSize/2 - 65);
     imageMode(CENTER);
     if (clueNum != 15) image(clueImages[clueNum], width/2, imageY, imageSize, imageSize);
   } else {
