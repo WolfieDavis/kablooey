@@ -3,9 +3,9 @@
 
 */
 //initialize caps
-int numSensors=10;
+int numSensors=15;
 
-int analogPins[]={A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14};
+int analogPins[]={A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15};
 
 int chargePins[]={22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52};
 
@@ -27,8 +27,9 @@ unsigned long taus[]={0, 0, 0 , 0, 0,    0, 0, 0, 0 , 0,    0, 0, 0, 0, 0};
 // Initialize Capacitance Variables  
 float picoFarads[]={0, 0, 0 , 0, 0,    0, 0, 0, 0 , 0,    0, 0, 0, 0, 0};             
 
-//these are the sensor nums of the caps (cap1=10)
-int writes[]={0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
+//these are the sensor nums of the caps 
+int writes[]={3, 15, 5, 4, 2, 9, 7, 14, 8, 13, 1, 10, 12, 6, 11};
+// {owl, cardinal, bat, pigeon, squirrel, ladybug, bear, fox, raccoon, deer, groundhog, frog, salamander, chipmunk, porcupine} 
 
 
 void setup()
@@ -78,8 +79,8 @@ void loop(){
     Serial.println(sensor+1); 
 
     if (picoFarads[sensor]>capbases[sensor]){   //prints the cap num if stepped on 
-//      Serial.write(writes[sensor]);
-      Serial.println(sensor+1);
+      Serial.write(writes[sensor]);
+//      Serial.println(sensor+1);
     }
 
   }
