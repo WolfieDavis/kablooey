@@ -11,6 +11,7 @@ final int width = 1920, height = 1080;
 final int lvlNum = 0, cdNum = 1, clNum = 2, scNum = 3, lbNum = 4, scNumLock = 5; //screen numbers
 int screen = 0; //screen index
 
+
 //for level select
 public final int boxWidth = 1500, boxHeight = 750;
 public final int cirlceY = 445, circleR = 300, circleSpacing = 475 ;
@@ -22,7 +23,7 @@ public final String[][] desc = {{"images", "ladybug"}, {"text", "gopher"}, {"sou
 PFont MkNotes;
 PImage BgLb, BgClues, Trophy;
 int index = 0;
-final int titleY = 200, listY = 225, listW = 1000, listSpacing = 82;
+final int titleY = 200, listY = 225, listW = 1000, listSpacing = 87;
 String typing = "";
 int nameOption = 0;
 String[] nameOptions = {"Beamer", 	"Buck", 	"Buster", 	"Captain", 	"Casper", 	"Chip", 	"Derby", 	"Droopy", 	"Eddie", 	"Ghost", 	"Hershey", 	"Hollywood", 	"Holyfield", 	"Ivan", 	"Lucky", 	"Marvin", 	"Maximus", 	"Oscar", 	"Prince", 	"Roscoe", 	"Tex", 	"Thor", 	"Tyrone", 	"Velvet", 	"Whitey", 	"Zeus", 	"Canyon", 	"Frost", 	"Tundra", 	"Lucky", 	"Romulus", 	"Aragorn", 	"Lobo", 	"Aztec", 	"Silver", 	"Dakota", 	"Timber", 	"Lance", 	"Winter", 	"Sabre", 	"Peter", 	"Asher", 	"Kiba"};
@@ -149,7 +150,7 @@ void hardwareInput() {
   } else if (screen == scNum) {
     // startTimer();
   } else if (screen == lbNum) {
-    if (value == 1) screen = lvlNum;
+    if (value == 0) screen = lvlNum;
   }
 }
 
@@ -205,12 +206,12 @@ void levelSelect() {
   /*--- box title ---*/
   fill(255);
   textAlign(CENTER);
-  textSize(85);
-  text("Select Clue Type", width/2, (height+275-boxHeight)/2 + 85);
-  // textSize(75);
-  // text("Select Clue Type", width/2, (height+275-boxHeight)/2 + 55);
-  // textSize(45);
-  // text("step on squirrel to start", width/2, (height+275-boxHeight)/2 + 125);
+  // textSize(85);
+  // text("Select Clue Type", width/2, (height+275-boxHeight)/2 + 85);
+  textSize(75);
+  text("Select Clue Type", width/2, (height+275-boxHeight)/2 + 55);
+  textSize(45);
+  text("step on squirrel to start", width/2, (height+275-boxHeight)/2 + 125);
   /*--- level circles ---*/
   ellipseMode(CENTER);
   for (int i = 0; i <= 2; i++) {
@@ -510,13 +511,6 @@ void leaderboard() {
 
   /*--- slots ---*/
   lbSlots();
-  //   textAlign(CENTER);
-  // textSize(45);
-  // text("step on squirrel to start", width/2, height - 50);
-  textAlign(CENTER);
-  fill(255);
-  textSize(45);
-  text("press start to continue", width/2, height - 40);
 }
 
 /*--- leaderboard slots ---*/

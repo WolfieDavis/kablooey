@@ -205,12 +205,12 @@ void levelSelect() {
   /*--- box title ---*/
   fill(255);
   textAlign(CENTER);
-  textSize(85);
-  text("Select Clue Type", width/2, (height+275-boxHeight)/2 + 85);
-  // textSize(75);
-  // text("Select Clue Type", width/2, (height+275-boxHeight)/2 + 55);
-  // textSize(45);
-  // text("step on squirrel to start", width/2, (height+275-boxHeight)/2 + 125);
+  // textSize(85);
+  // text("Select Clue Type", width/2, (height+275-boxHeight)/2 + 85);
+  textSize(75);
+  text("Select Clue Type", width/2, (height+275-boxHeight)/2 + 55);
+  textSize(45);
+  text("step on squirrel to start", width/2, (height+275-boxHeight)/2 + 125);
   /*--- level circles ---*/
   ellipseMode(CENTER);
   for (int i = 0; i <= 2; i++) {
@@ -516,7 +516,7 @@ void leaderboard() {
   textAlign(CENTER);
   fill(255);
   textSize(45);
-  text("press start to continue", width/2, height - 40);
+  text("step on gopher to start", width/2, height - 40);
 }
 
 /*--- leaderboard slots ---*/
@@ -533,7 +533,7 @@ void lbSlots() {
     //text
       fill(255);
       text("#" + (i+1), (width-listW)/2 + 15, listY+listSpacing*i -5);
-      text(names[i], (width-listW)/2 + 150, listY+listSpacing*i -5);
+         
       textAlign(RIGHT, CENTER);
       text(String.valueOf(scores[i]) + " s", (width+listW)/2 - 15, listY+listSpacing*i -5);
       textAlign(LEFT, CENTER);
