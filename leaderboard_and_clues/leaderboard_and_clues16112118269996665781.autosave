@@ -106,7 +106,7 @@ void draw() {
   else if (screen == scNum) scoreScreen();
   else if (screen == scNumLock) scoreScreenLocked();
   else if (screen == lbNum) leaderboard();
-  else if (screen == lbEditNum) lbEdit();
+  // else if (screen == lbEditNum) lbEdit();
 }
 
 /*--- game logic hardware input ---*/
@@ -392,57 +392,47 @@ void saveScore(int currentSec2, int currentFracSec2) {
   if (scores[i] != 999999) {
     do {
       if (currentScore < scores[i]) {
-        //expand
+        names = expand(names, names.length + 1);
         scores = expand(scores, scores.length + 1);
-        names = expand(names, scores.length + 1);
         levelOfScore = expand(levelOfScore, scores.length + 1);
-        //move all scores down 1
         for (int j = (scores.length-1); j > i; j--) {
           scores[j] = scores[j-1];
-          names[j] = names[j-1];
           levelOfScore[j] = levelOfScore[j-1];
+          names[j] = names[j-1];
         }
-        //add current score and name
         scores[i] = currentScore;
-        names[i] = thisName;
-        //add clue type
+
         if (clueLevel == 0) levelOfScore[i] = desc[0][0];
         else if (clueLevel == 1) levelOfScore[i] = desc[1][0];
         else levelOfScore[i] = desc[2][0];
-        
-        //rank display and end saving
+
+        names[i] = thisName;
         lbPosition = i+1;
         keepRunning = 0;
       } else if (i < scores.length - 1) {
         i++;
       } else {
-        //expand
         scores = expand(scores, scores.length + 1);
-        names = expand(names, scores.length + 1);
         levelOfScore = expand(levelOfScore, scores.length + 1);
-        //add current score and name to end
         scores[i+1] = currentScore;
-        names[i+1] = thisName;
-        //add clue type
+
         if (clueLevel == 0) levelOfScore[i+1] = desc[0][0];
         else if (clueLevel == 1) levelOfScore[i+1] = desc[1][0];
         else levelOfScore[i+1] = desc[2][0];
-        
-        //rank display and end saving
+
         lbPosition = i+2;
         keepRunning = 0;
+        names = expand(names, names.length + 1);
+        names[i] = thisName;
       }
     } while (keepRunning == 1);
-
-  } else { //first run
-    //add current score and name
+  } else {
     scores[0] = currentScore;
-    names[0] = thisName;
-    //add clue type
+
     if (clueLevel == 0) levelOfScore[i] = desc[0][0];
     else if (clueLevel == 1) levelOfScore[i] = desc[1][0];
     else levelOfScore[i] = desc[2][0];
-    //rank display
+    names[0] = thisName;
     lbPosition = 1;
   }
 
@@ -537,18 +527,16 @@ void lbSlots() {
   rectMode(CENTER);
   textFont(MkNotes, 50);
 
-
-
   for (int i = 0; i < 10; i++) {
     textAlign(LEFT, CENTER);
-    if (i < scores.length) {
+    if (i < names.length) {
     //rectangles
       fill(24, 128, 41, 235);
       rect(width/2, listY+listSpacing*i, listW, listSpacing-18, 15);
     //text
       fill(255);
       text("#" + (i+1), (width-listW)/2 + 15, listY+listSpacing*i -5);
-      text(names[i], (width-listW)/2 + 150, listY+listSpacing*i -5);
+      //text(names[i], (width-listW)/2 + 150, listY+listSpacing*i -5);
       textAlign(RIGHT, CENTER);
       text(String.valueOf(scores[i]) + " s", (width+listW)/2 - 15, listY+listSpacing*i -5);
       textAlign(LEFT, CENTER);
