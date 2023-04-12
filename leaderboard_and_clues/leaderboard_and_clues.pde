@@ -55,32 +55,37 @@ void setup() {
   fullScreen(2);
   // size(1920, 1080); //fullscreen for monitor
 
+  //load resoruces
   BgLb = loadImage("BgLbBlur.jpg"); //background for leaderboard
   BgClues = loadImage("BgCluesBlur.jpg");
   Trophy = loadImage("trophy.png");
   MkNotes = createFont("MarkerNotes.ttf", 10);
 
+  //serial input setup
   printArray(Serial.list());
   port = new Serial(this, Serial.list()[2], 9600); //COM9
   //recievedNum = port.read(); //5 or 11 or /dev/tty.usbserial-1420 also /dev/tty.usbserial-14xx or /dev/cu.usbserial-14xx
 
-  //initialize array of images for clues
+  //initialize clue arrays
   for (int i = 0; i < clueImagesNames.length; i++) {
     String imageName = clueImagesNames[i];
     String textName = clueTextNames[i];
+    String soundName = clueSoundNames[i];
     clueImages[i] = loadImage(imageName);
     clueText[i] = loadImage(textName);
-  }
-  for (int i = 0; i < clueSoundNames.length; i++) {
-    String soundName = clueSoundNames[i];
     clueSounds[i] = new SoundFile(this, soundName);
   }
+  
   //sound
   waveform = new Waveform(this, waveNum);
 
   //shuffle clues
   shuffleClues();
   shuffleString(nameOptions);
+
+  //load leaderboard
+  resetLeaderboard(); //only first time to create new file
+  importLeaderboard();
 }
 
 /*--- main loop ---*/
@@ -232,10 +237,7 @@ void levelSelect() {
   textAlign(CENTER);
   textSize(85);
   text("Select Clue Type", width/2, (height+275-boxHeight)/2 + 85);
-  // textSize(75);
-  // text("Select Clue Type", width/2, (height+275-boxHeight)/2 + 55);
-  // textSize(45);
-  // text("step on squirrel to start", width/2, (height+275-boxHeight)/2 + 125);
+
   /*--- level circles ---*/
   ellipseMode(CENTER);
   for (int i = 0; i <= 2; i++) {
@@ -265,7 +267,7 @@ void levelSelect() {
   }
 }
 
-/*-- countdown screen ---*/
+/*--- countdown screen ---*/
 void countdownScreen() {
   if (int(millis() - startTime) < 6000) { //6 second timer, counts up from start
     int currentTime = int(5-(millis() - startTime)/1000); //counts down from 5 to 1 visually
@@ -292,12 +294,6 @@ void clues() {
   imageMode(CORNER);
   background(0);
   image(BgClues, 0, 0, width, height);
-
-  /*--- background box ---*/
-  // fill(5, 99, 19, 255);
-  // fill(24, 128, 41, 185);
-  // rectMode(CENTER);
-  // rect(width/2, clueBoxY+clueBoxH/2, clueBoxW, clueBoxH, 15);
 
   /*--- title ---*/
   fill(255);
@@ -353,6 +349,7 @@ void clues() {
   clueStopwatch();
 }
 
+/*--- waveform for audio ---*/
 void waveformVisual(){
   final int offsetX = 50, offsetY = 100;
   //settings
@@ -377,6 +374,7 @@ void waveformVisual(){
   strokeWeight(1);
 }
 
+/*--- countdown ---*/
 void clueStopwatch() {
   int currentSec = int((millis() - startTime)/1000);
   int currentFracSec = int((millis() - startTime)/10 - currentSec*100);
@@ -398,18 +396,13 @@ void clueStopwatch() {
   if (clueNum == 15) saveScore(currentSec, currentFracSec);
 }
 
+/*--- saves scores ---*/
 void saveScore(int currentSec2, int currentFracSec2) {
   currentScore = Float.valueOf(currentSec2 + "." + currentFracSec2); //set current score
-  /*--- code adding score to leaderboard ---*/
 
-  // int lengthOld = scores.length;
   int keepRunning = 1;
   int i = 0;
-  // for (int i = 0; i < scores.length; i++) {
-  // scores[i] = scores[i]+1.00;
   String thisName = nameOptions[nameOption];
-  // nameOptions = shorten(nameOptions);
-
 
   if (scores[i] != 999999) {
     do {
@@ -472,9 +465,44 @@ void saveScore(int currentSec2, int currentFracSec2) {
   clueNum = 0; //reset clues
   startTimer(); //reset timer
   screen = scNum; //change screen to score display
+  exportLeaderboard();
   
   if (nameOption < nameOptions.length) nameOption++; //go to the next name in the list
   else nameOption = 0; //back to beginning
+}
+
+/*--- output leaderboard to txt file ---*/
+void exportLeaderboard() {
+  //initialize output array
+  String[] lbOut = new String[scores.length];
+  //add leaderboard data to output array
+  for (int i = 0; i < scores.length; i++) {
+    lbOut[i] = names[i] + ";" + levelOfScore[i] + ";" + str(scores[i]);
+  }
+  //save file
+  saveStrings("leaderboard.txt", lbOut);
+  saveStrings("leaderboardBackup.txt", lbOut);
+}
+
+/*--- input leaderboard from txt file ---*/
+void importLeaderboard() {
+  //initialize input array
+  String[] lbIn = loadStrings("leaderboard.txt");;
+  //add data from leaderboard file to arrays
+  for (int i = 0; i < lbIn.length; i++) {
+    //split into columns
+    String[] columns = split(lbIn[i], ';');
+    //load arrays
+    names[i] = columns[0];
+    levelOfScore[i] = columns[1];
+    scores[i] = float(columns[2]);    
+  }
+}
+
+/*--- initialize leaderboard file ---*/
+void resetLeaderboard() {
+  String[] initialValues = {names[0] + ";" + levelOfScore[0] + ";" + str(scores[0])};
+  saveStrings("leaderboard.txt", initialValues);
 }
 
 /*--- start timer ---*/
@@ -545,21 +573,18 @@ void leaderboard() {
 
   /*--- slots ---*/
   lbSlots();
-  //   textAlign(CENTER);
-  // textSize(45);
-  // text("step on squirrel to start", width/2, height - 50);
-  // textAlign(CENTER);
-  // fill(255);
-  // textSize(45);
-  // text("press start to continue", width/2, height - 40);
+
+  //bottom instructions
+  textAlign(CENTER);
+  fill(255);
+  textSize(45);
+  text("press start to continue", width/2, height - 35);
 }
 
 /*--- leaderboard slots ---*/
 void lbSlots() {
   rectMode(CENTER);
   textFont(MkNotes, 50);
-
-
 
   for (int i = 0; i < 10; i++) {
     textAlign(LEFT, CENTER);
@@ -601,8 +626,6 @@ int lbCheck() {
     screen = lbEditNum;
     for (int i = 9; i >= 0; i--) {
       if (mouseY < (topOfList + listSpacing*(i+1))) indexCheck = i;
-      // rectMode(CORNER); //for debugging
-      // rect(width/2, (topOfList + listSpacing*(i)), 40+i*10, (topOfList + listSpacing*(i+1))); //for debugging
     }
   }
   return indexCheck;
