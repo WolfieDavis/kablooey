@@ -19,11 +19,9 @@ public final String[][] desc = {{"images", "ladybug"}, {"text", "gopher"}, {"sou
 //for leaderboard
 PFont MkNotes;
 PImage BgLb, BgClues, Trophy;
-int index = 0;
 final int titleY = 200, listY = 225, listW = 1350, listSpacing = 82;
 String typing = "";
-String currentName;
-int numPlayers;
+int numPlayers, nameNum;
 // String[] nameOptions = {"Beamer", 	"Buck", 	"Buster", 	"Captain", 	"Casper", 	"Chip", 	"Derby", 	"Droopy", 	"Eddie", 	"Ghost", 	"Hershey", 	"Hollywood", 	"Holyfield", 	"Ivan", 	"Lucky", 	"Marvin", 	"Maximus", 	"Oscar", 	"Prince", 	"Roscoe", 	"Tex", 	"Thor", 	"Tyrone", 	"Velvet", 	"Whitey", 	"Zeus", 	"Canyon", 	"Frost", 	"Tundra", 	"Lucky", 	"Romulus", 	"Aragorn", 	"Lobo", 	"Aztec", 	"Silver", 	"Dakota", 	"Timber", 	"Lance", 	"Winter", 	"Sabre", 	"Peter", 	"Asher", 	"Kiba"};
 String[] nameOptions = {"groundhog", "squirrel", "owl", "pidgeon", "bat", "chipmunk", "bear", "raccoon", "ladybug", "frog", "porcupine", "salamander", "deer", "fox", "cardinal"};
 String[] names= {"salamander30"};
@@ -39,7 +37,7 @@ public final int clockBoxW = 500, clockOffset = (width-progBarW)/2+clockBoxW/2;
 //for timer for clues
 long startTime;
 float currentScore;
-int lbPosition;
+int lbIndex;
 
 //actual question info
 int[] clueOrder = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
@@ -158,13 +156,15 @@ void keyPressed() {
     // clueNum = int[random(0, 2)];
     } //else screen = lbNum; //go to leaderboard
   } else if (screen == lbNum) {
-    screen = lvlNum; //go back to level select
     if (key == '1') screen = scNumLock;
-    clueLevel = 0; //reset clue level
+    else if (key == '\n') screen = lbEditNum;
+    else {
+      screen = lvlNum; //go back to level select
+      clueLevel = 0; //reset clue level
+    }
   } else if (screen == lbEditNum){
       if (key == '\n' && typing.length() > 0) {
-      names[index] = typing;
-      currentName = typing;
+      names[lbIndex] = typing;
       typing = "";
       screen = lbNum;
     } else if ((key == '\b') && typing.length() > 0) {
@@ -179,9 +179,9 @@ void keyPressed() {
   }
 }
 
-/*--- if mouse clicked ---*/
+// /*--- if mouse clicked ---*/
 void mousePressed() {
-  if (screen == lbNum) index = lbCheck();
+//   if (screen == lbNum) index = lbCheck();
 }
 
 /*-- shuffles an array --*/
@@ -405,7 +405,8 @@ void saveScore(int currentSec2, int currentFracSec2) {
 
   int keepRunning = 1;
   int i = 0;
-  String thisName = nameOptions[int(random(nameOptions.length))] + numPlayers;
+  String thisName = nameOptions[nameNum] + str(numPlayers);
+  // String thisName = nameOptions[int(random(nameOptions.length+1))] + numPlayers;
 
   if (scores[i] != 999999) {
     do {
@@ -429,7 +430,7 @@ void saveScore(int currentSec2, int currentFracSec2) {
         else levelOfScore[i] = desc[2][0];
         
         //rank display and end saving
-        lbPosition = i+1;
+        lbIndex = i;
         keepRunning = 0;
       } else if (i < scores.length - 1) {
         i++;
@@ -447,7 +448,7 @@ void saveScore(int currentSec2, int currentFracSec2) {
         else levelOfScore[i+1] = desc[2][0];
         
         //rank display and end saving
-        lbPosition = i+2;
+        lbIndex = i+1;
         keepRunning = 0;
       }
     } while (keepRunning == 1);
@@ -461,7 +462,7 @@ void saveScore(int currentSec2, int currentFracSec2) {
     else if (clueLevel == 1) levelOfScore[i] = desc[1][0];
     else levelOfScore[i] = desc[2][0];
     //rank display
-    lbPosition = 1;
+    lbIndex = 0;
   }
 
   //last couple things
@@ -469,10 +470,10 @@ void saveScore(int currentSec2, int currentFracSec2) {
   startTimer(); //reset timer
   screen = scNum; //change screen to score display
   exportLeaderboard(); //save leaderboard file
-  currentName = thisName; //current name is random name
+  numPlayers++;
   
-  // if (nameOption < nameOptions.length) nameOption++; //go to the next name in the list
-  // else nameOption = 0; //back to beginning
+  if (nameNum < nameOptions.length) nameNum++; //go to the next name in the list
+  else nameNum = 0; //back to beginning
 }
 
 /*--- output leaderboard to txt file ---*/
@@ -529,11 +530,11 @@ void scoreScreen(int type) {
     fill(255);
     textAlign(CENTER);
     textSize(125);
-    text(currentName, width/2, height/2 - 215);
+    text(names[lbIndex], width/2, height/2 - 215);
     textSize(275);
-    text(currentScore + " s", width/2, height/2 + 100); //for 0 it says GO!
+    text(currentScore + " s", width/2, height/2 + 115);
     textSize(85);
-    text("Rank: #" + lbPosition + "!", width/2, height/2 + 315);
+    text("Rank: #" + (lbIndex+1) + "!", width/2, height/2 + 315);
   } else {
     // startTimer(); //reset timer
     screen = lbNum; //go to leaderboard screen
@@ -578,11 +579,12 @@ void lbSlots() {
       fill(24, 128, 41, 235);
       rect(width/2, listY+listSpacing*i, listW, listSpacing-18, 15);
     //text
-      fill(255);
+      if (i == lbIndex) fill(36, 236, 39);
+      else fill (255);
       text("#" + (i+1), (width-listW)/2 + 15, listY+listSpacing*i -5);
       text(names[i], (width-listW)/2 + 150, listY+listSpacing*i -5);
       textAlign(RIGHT, CENTER);
-      text(String.valueOf(scores[i]) + " s", (width+listW)/2 - 15, listY+listSpacing*i -5);
+      text(str(scores[i]) + " s", (width+listW)/2 - 15, listY+listSpacing*i -5);
       textAlign(LEFT, CENTER);
       text(levelOfScore[i], (width+listW)/2 - 600, listY+listSpacing*i -5);
     } else {
@@ -601,20 +603,20 @@ void lbSlots() {
   }
 }
 
-/*--- check which leaderboard slot was clicked ---*/
-int lbCheck() {
-  int indexCheck = 0;
-  int nameIndent = (width-listW)/2 + 150;
-  int topOfList = listY-(listSpacing-15)/2;
-  //determine which name was clicked on
-  if ((mouseX > nameIndent) && (mouseX < nameIndent+625) && (mouseY > topOfList)) {
-    screen = lbEditNum;
-    for (int i = 9; i >= 0; i--) {
-      if (mouseY < (topOfList + listSpacing*(i+1))) indexCheck = i;
-    }
-  }
-  return indexCheck;
-}
+// /*--- check which leaderboard slot was clicked ---*/
+// int lbCheck() {
+//   int indexCheck = 0;
+//   int nameIndent = (width-listW)/2 + 150;
+//   int topOfList = listY-(listSpacing-15)/2;
+//   //determine which name was clicked on
+//   if ((mouseX > nameIndent) && (mouseX < nameIndent+625) && (mouseY > topOfList)) {
+//     screen = lbEditNum;
+//     for (int i = 9; i >= 0; i--) {
+//       if (mouseY < (topOfList + listSpacing*(i+1))) indexCheck = i;
+//     }
+//   }
+//   return indexCheck;
+// }
 
 /*--- edit leaderboard window ---*/
 void lbEdit() {
