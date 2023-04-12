@@ -80,6 +80,7 @@ void setup() {
 
   //shuffle clues
   shuffleClues();
+  shuffleString(nameOptions);
 }
 
 /*--- main loop ---*/
@@ -175,17 +176,17 @@ void mousePressed() {
   if (screen == lbNum) index = lbCheck();
 }
 
-// /*-- shuffles an array of images --*/
-// void shuffleImages(){
-//    PImage temp;
-//    int pick;
-//    for(int i=0; i < clueImages.length; i++){
-//        pick = int(random(clueImages.length)); // picks a random position in the array
-//        temp = clueImages[i]; // stores value of current position
-//        clueImages[i] = clueImages[pick]; // copies picked value into current position
-//        clueImages[pick]= temp; // store original value in picked position
-//     }
-// }
+/*-- shuffles an array --*/
+void shuffleString(String[] arr){
+   String temp;
+   int pick;
+   for(int i=0; i < arr.length; i++){
+       pick = int(random(arr.length)); // picks a random position in the array
+       temp = arr[i]; // stores value of current position
+       arr[i] = arr[pick]; // copies picked value into current position
+       arr[pick]= temp; // store original value in picked position
+    }
+}
 
 /*-- shuffles the arrays of clues --*/
 void shuffleClues(){
