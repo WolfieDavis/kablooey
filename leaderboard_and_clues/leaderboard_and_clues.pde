@@ -1,5 +1,4 @@
 //prototype leaderboard
-// import data.clues
 import processing.serial.*; //import serial library
 import processing.sound.*; //import sound library
 
@@ -15,7 +14,6 @@ int screen = 0; //screen index
 public final int boxWidth = 1500, boxHeight = 750;
 public final int cirlceY = 445, circleR = 300, circleSpacing = 475 ;
 public final int descY = 725, descY2 = descY + 85;
-// public final String[] desc = {"images", "text", "sound"};
 public final String[][] desc = {{"images", "ladybug"}, {"text", "gopher"}, {"sound", "bear"}};
 
 //for leaderboard
@@ -27,39 +25,30 @@ String typing = "";
 int nameOption = 0;
 String[] nameOptions = {"Beamer", 	"Buck", 	"Buster", 	"Captain", 	"Casper", 	"Chip", 	"Derby", 	"Droopy", 	"Eddie", 	"Ghost", 	"Hershey", 	"Hollywood", 	"Holyfield", 	"Ivan", 	"Lucky", 	"Marvin", 	"Maximus", 	"Oscar", 	"Prince", 	"Roscoe", 	"Tex", 	"Thor", 	"Tyrone", 	"Velvet", 	"Whitey", 	"Zeus", 	"Canyon", 	"Frost", 	"Tundra", 	"Lucky", 	"Romulus", 	"Aragorn", 	"Lobo", 	"Aztec", 	"Silver", 	"Dakota", 	"Timber", 	"Lance", 	"Winter", 	"Sabre", 	"Peter", 	"Asher", 	"Kiba"};
 String[] names= {"one"};//, "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
-// String[] names= {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
-float[] scores = {999999};//24.00, 25.00, 50.00, 70.00, 75.00, 80.00};//, 120, 225, 250, 300};
+float[] scores = {999999};
 String[] levelOfScore = {"level"};
 
 //for clues
 int clueNum = 0, prevClueNum = -1;
 int clueLevel = 0;
-// public final int clueBoxW = 1250, clueBoxY = 100, clueBoxH = height - clueBoxY - 50;
 public final int progBarY = 100, progBarW = 1600, progBarH = 50;
 public final int imageSize = 850, imageX = 375, imageY = -35, textBoxW = 1050, textBoxX = imageX - (textBoxW-imageSize)/2;
 public final int clockBoxW = 500, clockOffset = (width-progBarW)/2+clockBoxW/2;
-// public final int offset = 50;
-// public final int x1 = width/2+imageX-50 - imageSize/2 + 50;
-// public final int x2 = width/2+imageX + imageSize/2 - 50;
-// public final int y1 = height/2+imageY - imageSize/2 + 100;
-// public final int y2 = height/2+imageY + imageSize/2 - 100;
-// public final int imageX = (width+clueBoxW)/2 - imageSize + 50;
-//public final int imageY = height/2;
 //for timer for clues
 long startTime;
 float currentScore;
 int lbPosition;
-// long currentTime;
 
 //actual question info
+int[] clueOrder = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 public final String[] clueImagesNames = {"a1.jpg", "a2.jpg", "a3.jpg", "a4.jpg", "a5.jpg", "a6.jpg", "a7.jpg", "a8.jpg", "a9.jpg", "a10.jpg", "a11.jpg", "a12.jpg", "a13.jpg", "a14.jpg", "a15.jpg"};
 PImage[] clueImages = new PImage[clueImagesNames.length];
-Waveform waveform;
-public final int waveNum = 150;
-public final String[] clueSoundNames = {"a1.mp3", "a2.mp3", "a3.mp3", "a4.mp3", "a5.mp3", "a6.mp3", "a7.mp3", "a8.mp3", "a9.mp3", "a10.mp3", "a11.mp3", "a12.mp3", "a13.mp3", "a14.mp3", "a15.mp3"};
-SoundFile[] clueSounds = new SoundFile[clueSoundNames.length];
 public final String[] clueTextNames = {"t1.png", "t2.png", "t3.png", "t4.png", "t5.png", "t6.png", "t7.png", "t8.png", "t9.png", "t10.png", "t11.png", "t12.png", "t13.png", "t14.png", "t15.png"};
 PImage[] clueText = new PImage[clueTextNames.length];
+public final String[] clueSoundNames = {"a1.mp3", "a2.mp3", "a3.mp3", "a4.mp3", "a5.mp3", "a6.mp3", "a7.mp3", "a8.mp3", "a9.mp3", "a10.mp3", "a11.mp3", "a12.mp3", "a13.mp3", "a14.mp3", "a15.mp3"};
+SoundFile[] clueSounds = new SoundFile[clueSoundNames.length];
+Waveform waveform;
+public final int waveNum = 150;
 
 /*--- setup ---*/
 void setup() {
@@ -88,11 +77,9 @@ void setup() {
   }
   //sound
   waveform = new Waveform(this, waveNum);
-  
-  // startTimer();
-  // while (int(millis() - startTime) < 3000){
-  //   screen = 0;
-  // }
+
+  //shuffle clues
+  shuffleClues();
 }
 
 /*--- main loop ---*/
@@ -120,18 +107,15 @@ void hardwareInput() {
     else if (value == 0){// || value == 12) { //button or salamander
       startTimer();
       screen = cdNum; //go to countdown
+      shuffleClues();
     }
   } else if (screen == cdNum) {
     // if (value == 0) screen = clNum; //go to clues
   } else if (screen == clNum) {
-    if (value == clueNum+1) { //+1 bc 0 is start button
-      // if (clueNum == 14) {
-      // clueNum = 20;
-      // screen = scNum;
-      // } else
+    if (value == clueOrder[clueNum]) { 
       clueSounds[clueNum].stop();
       clueNum++;
-    } //else if (value == 0) screen = lbNum; //go to leaderboard
+    }
   } else if (screen == scNum) {
     // startTimer();
   } else if (screen == lbNum) {
@@ -147,15 +131,16 @@ void keyPressed() {
     else if (key == '3') clueLevel=2;
     // else if (key == '4') screen = clNum; //dev
     // else if (key == '5') screen = scNum; //dev
-    // else if (key == '6') screen = lbNum; //dev
+    else if (key == '6') screen = lbNum; //dev
     else {
       startTimer();
       screen = cdNum; //go to countdown
+      shuffleClues();
     }
   } else if (screen == cdNum) {
       // screen = clNum; //go to clues
   } else if (screen == clNum) {
-    // if (key == 'a') {
+    if (key == 'a') {
     // if (clueNum == 14) {
     //   clueNum = 20;
     //   // screen = scNum;
@@ -163,7 +148,7 @@ void keyPressed() {
     clueSounds[clueNum].stop();
     clueNum++;
     // clueNum = int[random(0, 2)];
-    // } //else screen = lbNum; //go to leaderboard
+    } //else screen = lbNum; //go to leaderboard
   } else if (screen == lbNum) {
     screen = lvlNum; //go back to level select
     if (key == '1') screen = scNumLock;
@@ -188,6 +173,42 @@ void keyPressed() {
 /*--- if mouse clicked ---*/
 void mousePressed() {
   if (screen == lbNum) index = lbCheck();
+}
+
+// /*-- shuffles an array of images --*/
+// void shuffleImages(){
+//    PImage temp;
+//    int pick;
+//    for(int i=0; i < clueImages.length; i++){
+//        pick = int(random(clueImages.length)); // picks a random position in the array
+//        temp = clueImages[i]; // stores value of current position
+//        clueImages[i] = clueImages[pick]; // copies picked value into current position
+//        clueImages[pick]= temp; // store original value in picked position
+//     }
+// }
+
+/*-- shuffles the arrays of clues --*/
+void shuffleClues(){
+   PImage tempImg, tempText;
+   SoundFile tempSound;
+   int pick, tempNum;
+
+   for(int i=0; i < clueOrder.length; i++){
+    //pick random number
+    pick = int(random(clueOrder.length));
+    //save current element to temp
+    tempNum = clueOrder[i];
+    tempImg = clueImages[i];
+    tempText = clueText[i];
+    //insert randomly chosen element into current index
+    clueOrder[i] = clueOrder[pick];
+    clueImages[i] = clueImages[pick];
+    clueText[i] = clueText[pick];
+    //insert original element into the random index
+    clueOrder[pick]= tempNum;
+    clueImages[pick]= tempImg;
+    clueText[pick]= tempText;
+  }
 }
 
 /*--- level selection window ---*/
