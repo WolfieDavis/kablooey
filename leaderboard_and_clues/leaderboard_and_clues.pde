@@ -31,9 +31,9 @@ float[] scores = {999999};
 //for clues
 int clueNum = 0, prevClueNum = -1;
 int clueLevel = 0;
-public final int progBarY = 100, progBarW = 1600, progBarH = 50;
-public final int imageSize = 850, imageX = 375, imageY = -35, textBoxW = 1050, textBoxX = imageX - (textBoxW-imageSize)/2;
-public final int clockBoxW = 500, clockOffset = (width-progBarW)/2+clockBoxW/2;
+public final int progBarY = 100, progBarW = 1700, progBarH = 50;
+public final int imageSize = 850, imageY = -35, textBoxW = 1050, textBoxX = (width+progBarW)/2 - textBoxW/2;
+public final int clockBoxW = 500, clockOffset = (width-progBarW)/2 + clockBoxW/2;
 //for timer for clues
 long startTime;
 float currentScore;
@@ -41,10 +41,11 @@ int lbIndex;
 
 //actual question info
 int[] clueOrder = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-public final String[] clueImagesNames = {"a1.jpg", "a2.jpg", "a3.jpg", "a4.jpg", "a5.jpg", "a6.jpg", "a7.jpg", "a8.jpg", "a9.jpg", "a10.jpg", "a11.jpg", "a12.jpg", "a13.jpg", "a14.jpg", "a15.jpg"};
+public final String[] clueImagesNames = {"a1.png", "a2.png", "a3.png", "a4.png", "a5.png", "a6.png", "a7.png", "a8.png", "a9.png", "a10.png", "a11.png", "a12.png", "a13.png", "a14.png", "a15.png"};
 PImage[] clueImages = new PImage[clueImagesNames.length];
 public final String[] clueTextNames = {"t1.png", "t2.png", "t3.png", "t4.png", "t5.png", "t6.png", "t7.png", "t8.png", "t9.png", "t10.png", "t11.png", "t12.png", "t13.png", "t14.png", "t15.png"};
 PImage[] clueText = new PImage[clueTextNames.length];
+public final String[] clueSoundNames = {"a1.mp3", "a2.mp3", "a3.mp3", "a4.mp3", "a5backup.mp3", "a6.mp3", "a7backup.mp3", "a8backup.mp3", "a9.mp3", "a10.mp3", "a11.mp3", "a12.mp3", "a13.mp3", "a14.mp3", "a15.mp3"};
 public final String[] clueSoundNames = {"a1.mp3", "a2.mp3", "a3.mp3", "a4.mp3", "a5.mp3", "a6.mp3", "a7.mp3", "a8.mp3", "a9.mp3", "a10.mp3", "a11.mp3", "a12.mp3", "a13.mp3", "a14.mp3", "a15.mp3"};
 SoundFile[] clueSounds = new SoundFile[clueSoundNames.length];
 Waveform waveform;
@@ -209,14 +210,17 @@ void shuffleClues(){
     tempNum = clueOrder[i];
     tempImg = clueImages[i];
     tempText = clueText[i];
+    tempSound = clueSounds[i];
     //insert randomly chosen element into current index
     clueOrder[i] = clueOrder[pick];
     clueImages[i] = clueImages[pick];
     clueText[i] = clueText[pick];
+    clueSounds[i] = clueSounds[pick];
     //insert original element into the random index
     clueOrder[pick]= tempNum;
     clueImages[pick]= tempImg;
     clueText[pick]= tempText;
+    clueSounds[pick]= tempSound;
   }
 }
 
@@ -302,30 +306,34 @@ void clues() {
   fill(255);
   textAlign(LEFT);
   textSize(135);
-  text("Clue " + (clueNum+1), 150, height/2-350);
+  text("Clue " + (clueNum+1), (width-progBarW)/2, height/2-350);
   textSize(75);
-  if (clueLevel == 0) text("image closeup", 150, height/2-250);
-  else text(desc[clueLevel][0], 150, height/2-250); 
+  // if (clueLevel == 0) text("closeup", 150, height/2-250);
+  // else 
+  text(desc[clueLevel][0], (width-progBarW)/2, height/2-250); 
 
   /*--- clues ---*/
   if (clueNum != 15){
     if (clueLevel == 0) { //image
+      // fill(5, 99, 19, 255);
+      // rectMode(CENTER);    
+      // rect(width/2+textBoxX, height/2+imageY, textBoxW, imageSize, 30);
       imageMode(CENTER);
-      image(clueImages[clueNum], width/2+imageX, height/2+imageY, imageSize, imageSize);
+      image(clueImages[clueNum], textBoxX, height/2+imageY, textBoxW, imageSize);
 
     } else if (clueLevel == 1) { //text
       fill(5, 99, 19, 255);
       rectMode(CENTER);    
       // fill(24, 128, 41, 185);
-      rect(width/2+textBoxX, height/2+imageY, textBoxW, imageSize, 30);
+      rect(textBoxX, height/2+imageY, textBoxW, imageSize, 30);
       imageMode(CENTER);
-      image(clueText[clueNum], width/2+textBoxX, height/2+imageY, textBoxW, imageSize);
+      image(clueText[clueNum], textBoxX, height/2+imageY, textBoxW, imageSize);
 
     } else { //sound
       fill(5, 99, 19, 255);
       // fill(24, 128, 41, 185);
       rectMode(CENTER);    
-      rect(width/2+textBoxX, height/2+imageY, textBoxW, imageSize, 30);
+      rect(textBoxX, height/2+imageY, textBoxW, imageSize, 30);
       //audio start (audio stop is in game logic)
       if (clueNum != prevClueNum) {
         clueSounds[clueNum].loop();
@@ -367,7 +375,7 @@ void waveformVisual(){
     // Draw current data of the waveform
     // Each sample in the data array is between -1 and +1 
     vertex(
-      map(i, 0, waveNum, width/2+textBoxX-textBoxW/2+offsetX, width/2+textBoxX+textBoxW/2-offsetX),
+      map(i, 0, waveNum, textBoxX-textBoxW/2+offsetX, textBoxX+textBoxW/2-offsetX),
       map(waveform.data[i], -1, 1, height/2+imageY-imageSize/2+offsetY, height/2+imageY+imageSize/2-offsetY)
     );
   }
