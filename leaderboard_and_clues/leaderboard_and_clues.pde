@@ -12,9 +12,9 @@ int screen = 0; //screen index
 
 //for level select
 public final int boxWidth = 1500, boxHeight = 750;
-public final int cirlceY = 445, circleR = 300, circleSpacing = 475 ;
-public final int descY = 725, descY2 = descY + 85;
-public final String[][] desc = {{"images", "ladybug"}, {"text", "gopher"}, {"sound", "bear"}};
+public final int cirlceY = 435, circleR = 300, circleSpacing = 475 ;
+public final int descY = 715, descY2 = descY + 95;
+public final String[][] desc = {{"images", "owl"}, {"text", "pidgeon"}, {"sound", "bat"}};
 
 //for leaderboard
 PFont MkNotes;
@@ -45,9 +45,11 @@ public final String[] clueImagesNames = {"a1.png", "a2.png", "a3.png", "a4.png",
 PImage[] clueImages = new PImage[clueImagesNames.length];
 public final String[] clueTextNames = {"t1.png", "t2.png", "t3.png", "t4.png", "t5.png", "t6.png", "t7.png", "t8.png", "t9.png", "t10.png", "t11.png", "t12.png", "t13.png", "t14.png", "t15.png"};
 PImage[] clueText = new PImage[clueTextNames.length];
-// public final String[] clueSoundNames = {"a1.mp3", "a2.mp3", "a3.mp3", "a4.mp3", "a5backup.mp3", "a6.mp3", "a7backup.mp3", "a8backup.mp3", "a9.mp3", "a10.mp3", "a11.mp3", "a12.mp3", "a13.mp3", "a14.mp3", "a15.mp3"};
 public final String[] clueSoundNames = {"a1.mp3", "a2.mp3", "a3.mp3", "a4.mp3", "a5.mp3", "a6.mp3", "a7.mp3", "a8.mp3", "a9.mp3", "a10.mp3", "a11.mp3", "a12.mp3", "a13.mp3", "a14.mp3", "a15.mp3"};
 SoundFile[] clueSounds = new SoundFile[clueSoundNames.length];
+int easyAudio = 0;
+public final String[] clueSoundNamesEasy = {"a1.mp3", "a2.mp3", "a3.mp3", "a4.mp3", "a5backup.mp3", "a6.mp3", "a7backup.mp3", "a8backup.mp3", "a9.mp3", "a10.mp3", "a11.mp3", "a12.mp3", "a13.mp3", "a14.mp3", "a15.mp3"};
+SoundFile[] clueSoundsEasy = new SoundFile[clueSoundNamesEasy.length];
 Waveform waveform;
 public final int waveNum = 150;
 
@@ -72,9 +74,11 @@ void setup() {
     String imageName = clueImagesNames[i];
     String textName = clueTextNames[i];
     String soundName = clueSoundNames[i];
+    String soundNameEasy = clueSoundNamesEasy[i];
     clueImages[i] = loadImage(imageName);
     clueText[i] = loadImage(textName);
     clueSounds[i] = new SoundFile(this, soundName);
+    clueSoundsEasy[i] = new SoundFile(this, soundNameEasy);
   }
   
   //sound
@@ -108,9 +112,9 @@ void hardwareInput() {
   int value = port.read();
 
   if (screen == lvlNum) {
-    if (value == 9) clueLevel=0;
-    else if (value == 1) clueLevel=1;
-    else if (value == 7) clueLevel=2;
+    if (value == 3) clueLevel=0;
+    else if (value == 4) clueLevel=1;
+    else if (value == 5) clueLevel=2;
     else if (value == 0){// || value == 12) { //button or salamander
       startTimer();
       screen = cdNum; //go to countdown
@@ -121,6 +125,7 @@ void hardwareInput() {
   } else if (screen == clNum) {
     if (value == clueOrder[clueNum]) { 
       clueSounds[clueNum].stop();
+      clueSoundsEasy[clueNum].stop();
       clueNum++;
     } else if (value == 0 ) scoreCancel();
   } else if (screen == scNum) {
@@ -135,7 +140,13 @@ void keyPressed() {
   if (screen == lvlNum) {
     if (key == '1') clueLevel=0;
     else if (key == '2') clueLevel=1;
-    else if (key == '3') clueLevel=2;
+    else if (key == '3') {
+      clueLevel=2;
+      easyAudio = 0;
+    } else if (key == '5') {
+      clueLevel=2;
+      easyAudio = 1;
+    }
     // else if (key == '4') screen = clNum; //dev
     // else if (key == '5') screen = scNum; //dev
     else if (key == '6') screen = lbNum; //dev
@@ -153,6 +164,7 @@ void keyPressed() {
     //   // screen = scNum;
     // } else
     clueSounds[clueNum].stop();
+    clueSoundsEasy[clueNum].stop();
     clueNum++;
     // clueNum = int[random(0, 2)];
     } else if (key == '\b') scoreCancel();
@@ -270,7 +282,7 @@ void levelSelect() {
     fill(255);
     textSize(75);
     text(desc[i][0], width/2 - circleSpacing + circleSpacing*i, (height-boxHeight)/2 + descY);
-    textSize(55);
+    textSize(65);
     text(desc[i][1], width/2 - circleSpacing + circleSpacing*i, (height-boxHeight)/2 + descY2);
   }
 }
@@ -337,8 +349,13 @@ void clues() {
       rect(textBoxX, height/2+imageY, textBoxW, imageSize, 30);
       //audio start (audio stop is in game logic)
       if (clueNum != prevClueNum) {
-        clueSounds[clueNum].loop();
-        waveform.input(clueSounds[clueNum]);
+        if (easyAudio == 0) { 
+          clueSounds[clueNum].loop();
+          waveform.input(clueSounds[clueNum]);
+        } else {
+          clueSoundsEasy[clueNum].loop();
+          waveform.input(clueSoundsEasy[clueNum]);
+        }
       }
       waveformVisual();
 

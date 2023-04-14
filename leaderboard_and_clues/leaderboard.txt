@@ -1,1 +1,2 @@
-salamander30;images;999999.0
+owl1;sound;5.38
+squirrel2;sound;32.7
