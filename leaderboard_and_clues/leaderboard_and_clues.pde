@@ -45,7 +45,7 @@ public final String[] clueImagesNames = {"a1.png", "a2.png", "a3.png", "a4.png",
 PImage[] clueImages = new PImage[clueImagesNames.length];
 public final String[] clueTextNames = {"t1.png", "t2.png", "t3.png", "t4.png", "t5.png", "t6.png", "t7.png", "t8.png", "t9.png", "t10.png", "t11.png", "t12.png", "t13.png", "t14.png", "t15.png"};
 PImage[] clueText = new PImage[clueTextNames.length];
-public final String[] clueSoundNames = {"a1.mp3", "a2.mp3", "a3.mp3", "a4.mp3", "a5backup.mp3", "a6.mp3", "a7backup.mp3", "a8backup.mp3", "a9.mp3", "a10.mp3", "a11.mp3", "a12.mp3", "a13.mp3", "a14.mp3", "a15.mp3"};
+// public final String[] clueSoundNames = {"a1.mp3", "a2.mp3", "a3.mp3", "a4.mp3", "a5backup.mp3", "a6.mp3", "a7backup.mp3", "a8backup.mp3", "a9.mp3", "a10.mp3", "a11.mp3", "a12.mp3", "a13.mp3", "a14.mp3", "a15.mp3"};
 public final String[] clueSoundNames = {"a1.mp3", "a2.mp3", "a3.mp3", "a4.mp3", "a5.mp3", "a6.mp3", "a7.mp3", "a8.mp3", "a9.mp3", "a10.mp3", "a11.mp3", "a12.mp3", "a13.mp3", "a14.mp3", "a15.mp3"};
 SoundFile[] clueSounds = new SoundFile[clueSoundNames.length];
 Waveform waveform;
@@ -122,7 +122,7 @@ void hardwareInput() {
     if (value == clueOrder[clueNum]) { 
       clueSounds[clueNum].stop();
       clueNum++;
-    }
+    } else if (value == 0 ) scoreCancel();
   } else if (screen == scNum) {
     // startTimer();
   } else if (screen == lbNum) {
@@ -137,7 +137,7 @@ void keyPressed() {
     else if (key == '2') clueLevel=1;
     else if (key == '3') clueLevel=2;
     // else if (key == '4') screen = clNum; //dev
-    else if (key == '5') screen = scNum; //dev
+    // else if (key == '5') screen = scNum; //dev
     else if (key == '6') screen = lbNum; //dev
     else {
       startTimer();
@@ -155,7 +155,8 @@ void keyPressed() {
     clueSounds[clueNum].stop();
     clueNum++;
     // clueNum = int[random(0, 2)];
-    } //else screen = lbNum; //go to leaderboard
+    } else if (key == '\b') scoreCancel();
+    //else screen = lbNum; //go to leaderboard
   } else if (screen == lbNum) {
     if (key == '1') screen = scNumLock;
     else if (key == '\n') screen = lbEditNum;
@@ -482,6 +483,13 @@ void saveScore(int currentSec2, int currentFracSec2) {
   
   if (nameNum < nameOptions.length) nameNum++; //go to the next name in the list
   else nameNum = 0; //back to beginning
+}
+
+/*-- cancel score and go back to start --*/
+void scoreCancel() {
+  clueNum = 0; //reset clues
+  clueLevel = 0; //reset clue level
+  screen = lvlNum; //go back to choosing screen
 }
 
 /*--- output leaderboard to txt file ---*/
