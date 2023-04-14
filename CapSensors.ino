@@ -1,5 +1,5 @@
 /* code adapted from https://www.instructables.com/Measure-Capacitance-with-Arduino/
- https://docs.arduino.cc/tutorials/generic/capacitance-meter
+ https://docs.arduino.cc/tutorials/generic/capacitance-meter  and   https://docs.arduino.cc/built-in-examples/digital/Button
 
 */
 //initialize caps
@@ -14,6 +14,11 @@ int dischargePins[]={23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, 51,
 //capacitances when not stepped on
 long capbases[]={13000, 13000, 13000, 13000, 13000,     13000, 13000, 13000, 13000, 13000,    13000, 13000, 13000, 13000, 13000};
 
+
+//Initialize button
+int buttonPin=12;
+int buttonState=0;
+int button_write=0;
 
 // Initialize Resistor
 int resistorValue = 10000;
@@ -32,6 +37,7 @@ int writes[]={3, 15, 5, 4, 2, 9, 7, 14, 8, 13, 1, 10, 12, 6, 11};
 // {owl, cardinal, bat, pigeon, squirrel, ladybug, bear, fox, raccoon, deer, groundhog, frog, salamander, chipmunk, porcupine} 
 
 
+
 void setup()
 {
   for (int sensor=0; sensor<numSensors; sensor++){
@@ -40,10 +46,18 @@ void setup()
   }
 
   Serial.begin(9600); // Necessary to print data to serial monitor over USB
-
+  
+  pinMode(buttonPin, INPUT);
 }
 
 void loop(){
+  buttonState=digitalRead(buttonPin);
+
+  //if button pressed
+  if (buttonState==HIGH){
+    Serial.write(button_write);
+  }
+
   
   for (int sensor=0; sensor<numSensors; sensor++){
     digitalWrite(chargePins[sensor], LOW); //stops charging caps
