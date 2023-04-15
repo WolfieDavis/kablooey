@@ -1,1 +1,8 @@
-deer1;images;4.89
+squirrel5;images;2.69
+pidgeon3;text;3.48
+hello hello  h;images;3.63
+bear2;images;4.8
+test2;images;4.9
+cardinal4;text;7.52
+testssss;images;19.58
+porcupine7;images;39.66

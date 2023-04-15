@@ -11,12 +11,15 @@ final int lvlNum = 0, cdNum = 1, clNum = 2, scNum = 3, lbNum = 4, lbEditNum = 5,
 int screen = 0; //screen index
 
 //for level select
+float iconH;
 public final int boxWidth = 1500, boxHeight = 750;
 public final int cirlceY = 550, circleR = 300, circleSpacing = 475 ;
 public final int descY = cirlceY - 200, descY2 = cirlceY + 250;
 // public final int cirlceY = 435, circleR = 300, circleSpacing = 475 ;
 // public final int descY = 715, descY2 = descY + 95;
 public final String[][] desc = {{"images", "owl"}, {"text", "pidgeon"}, {"sound", "bat"}};
+public final String[] levelIconNames = {"image.svg", "text.svg", "sound.svg"};
+PShape[] levelIcons = new PShape[levelIconNames.length];
 
 //for leaderboard
 PFont MkNotes;
@@ -82,6 +85,13 @@ void setup() {
     clueSounds[i] = new SoundFile(this, soundName);
     // clueSoundsEasy[i] = new SoundFile(this, soundNameEasy);
   }
+
+  //icons for level select menu
+  for (int i = 0; i < levelIconNames.length; i++) {
+    String levelIconName = levelIconNames[i];
+    levelIcons[i] = loadShape(levelIconName);
+    levelIcons[i].disableStyle();
+  }
   
   //sound
   waveform = new Waveform(this, waveNum);
@@ -91,7 +101,7 @@ void setup() {
   shuffleString(nameOptions);
 
   //load leaderboard
-  resetLeaderboard(); //only first time to create new file
+  // resetLeaderboard(); //only first time to create new file
   importLeaderboard();
 }
 
@@ -153,7 +163,7 @@ void keyPressed() {
     }
     // else if (key == '4') screen = clNum; //dev
     // else if (key == '5') screen = scNum; //dev
-    else if (key == '6') screen = lbNum; //dev
+    // else if (key == '6') screen = lbNum; //dev
     else {
       startTimer();
       screen = cdNum; //go to countdown
@@ -181,10 +191,12 @@ void keyPressed() {
       clueLevel = 0; //reset clue level
     }
   } else if (screen == lbEditNum){
-      if (key == '\n' && typing.length() > 0) {
+    if (key == '\n' && typing.length() == 0) key = 0;
+    else if (key == '\n' && typing.length() > 0) {
       names[lbIndex] = typing;
       typing = "";
       screen = lbNum;
+      exportLeaderboard();
     } else if ((key == '\b') && typing.length() > 0) {
       typing = typing.substring(0, typing.length()-1);
     } else if (keyCode == 27) {
@@ -274,20 +286,34 @@ void levelSelect() {
     }
     //circles
     if (i == 0) fill(51, 149, 26);//fill(136, 236, 39);
-    else if (i==1) fill(222, 191, 39);
+    else if (i == 1) fill(222, 191, 39);
     else fill(216, 83, 66);
     circle(width/2 - circleSpacing + circleSpacing*i, (height-boxHeight)/2 + cirlceY, circleR);
+    
     //circle labels
-    if (clueLevel == i) fill(255);
-    else fill(5, 99, 19);
-    textSize(150);
-    text(i+1, width/2 - circleSpacing + circleSpacing*i, (height-boxHeight)/2 + cirlceY + 58);
+    if (clueLevel == i) {
+      fill(255);
+      stroke(255);
+    } else {
+      fill(5, 99, 19);
+      stroke(5, 99, 19);
+    }
+    // textSize(150);
+    // text(i+1, width/2 - circleSpacing + circleSpacing*i, (height-boxHeight)/2 + cirlceY + 58);
+    float scale = 2.25;
+    if (i == 1) iconH = 42*scale;
+    else iconH =  50*scale;
+    shape(levelIcons[i], width/2 - circleSpacing + circleSpacing*i - (iconH)/2 - ((i==1)? 25: 20), (height-boxHeight)/2 + cirlceY - (64*scale)/2 + 20, 64*scale, iconH);
+
     //descriptions
     fill(255);
     textSize(75);
     text(desc[i][0], width/2 - circleSpacing + circleSpacing*i, (height-boxHeight)/2 + descY);
     textSize(65);
     text(desc[i][1], width/2 - circleSpacing + circleSpacing*i, (height-boxHeight)/2 + descY2);
+
+    //reset stroke
+    stroke(0);
   }
 }
 
@@ -529,7 +555,12 @@ void exportLeaderboard() {
 /*--- input leaderboard from txt file ---*/
 void importLeaderboard() {
   //initialize input array
-  String[] lbIn = loadStrings("leaderboard.txt");;
+  String[] lbIn = loadStrings("leaderboard.txt");
+  //expand arrays
+  scores = expand(scores, lbIn.length);
+  names = expand(names, lbIn.length);
+  levelOfScore = expand(levelOfScore, lbIn.length);
+
   //add data from leaderboard file to arrays
   for (int i = 0; i < lbIn.length; i++) {
     //split into columns
@@ -621,7 +652,7 @@ void lbSlots() {
       text("#" + (i+1), (width-listW)/2 + 15, listY+listSpacing*i -5);
       text(names[i], (width-listW)/2 + 150, listY+listSpacing*i -5);
       textAlign(RIGHT, CENTER);
-      text(str(scores[i]) + " s", (width+listW)/2 - 15, listY+listSpacing*i -5);
+      text(str(scores[i]) + " s", (width+listW)/2 - 25, listY+listSpacing*i -5);
       textAlign(LEFT, CENTER);
       text(levelOfScore[i], (width+listW)/2 - 600, listY+listSpacing*i -5);
     } else {
@@ -633,7 +664,7 @@ void lbSlots() {
       text("#" + (i+1), (width-listW)/2 + 15, listY+listSpacing*i -5);
       text("name", (width-listW)/2 + 150, listY+listSpacing*i -5);
       textAlign(RIGHT, CENTER);
-      text("---", (width+listW)/2 - 15, listY+listSpacing*i -5);
+      text("---", (width+listW)/2 - 25, listY+listSpacing*i -5);
       textAlign(LEFT, CENTER);
       text("---", (width+listW)/2 - 600, listY+listSpacing*i -5);
     }
